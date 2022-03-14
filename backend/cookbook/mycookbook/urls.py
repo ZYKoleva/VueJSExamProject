@@ -1,8 +1,8 @@
 from rest_framework import routers
 from django.urls import path, include
-from .views import ListRecipesView
+from .views import RecipesApiView
 
 
 urlpatterns = [
-    path('recipes/', ListRecipesView.as_view()),
+    path('recipes/', RecipesApiView.as_view()),
 ]
