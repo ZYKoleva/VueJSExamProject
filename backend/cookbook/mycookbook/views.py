@@ -1,21 +1,13 @@
 from django.shortcuts import render
-
+from django.contrib.auth.models import User
 from .models import Recipe
 from .serializers import RecipeSerializer
+from rest_framework import views as rest_views
+from rest_framework.response import Response
 
-from rest_framework import viewsets
-from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+class ListRecipesView(rest_views.APIView):
+    def get(selfself, request):
+        recipes = Recipe.objects.all()
+        serializer = RecipeSerializer(recipes, many=True)
+        return Response({"recipes": serializer.data})
 
-
-class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
-    # permission_classes = IsAuthenticated
-    # authentication_classes = BasicAuthentication
-    serializer_class = RecipeSerializer
-
-
-# Create your views here.
-class RecipeDefaultViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.filter(created_by=0)
-    serializer_class = RecipeSerializer

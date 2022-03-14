@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import Recipe
+from django.contrib.auth.models import User
 
-class RecipeSerializer(serializers.HyperlinkedModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'description', 'can_be_cooked', 'recipe_ingredient', 'created_by')
+        fields = '__all__'

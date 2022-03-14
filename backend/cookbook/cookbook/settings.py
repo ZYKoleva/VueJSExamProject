@@ -115,12 +115,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-    {
-        'NAME': 'rest_framework.permissions.IsAuthenticated',
-    },
-    {
-        'NAME': 'rest_framework.authentication.BasicAuthentication',
-    },
+    # {
+    #     'NAME': 'rest_framework.permissions.IsAuthenticated',
+    # },
+    # {
+    #     'NAME': 'rest_framework.authentication.BasicAuthentication',
+    # },
 ]
 
 
@@ -149,10 +149,11 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-    ),
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     #'rest_framework.permissions.IsAuthenticated',
+    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    # ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework.authentication.BasicAuthentication',
+    # ),
 }

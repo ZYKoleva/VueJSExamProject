@@ -8,11 +8,14 @@ class Recipe(models.Model):
     description = models.TextField(max_length=1000, blank=True)
     can_be_cooked = models.BooleanField(default=True)
     recipe_ingredient = models.JSONField(blank=True)
-    created_by = models.IntegerField(default=0)
+    owner = models.CharField(max_length=50, blank=True)
 
 
 class UserMyRecipe(models.Model):
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     user_my_recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+
+
 
 
