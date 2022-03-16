@@ -111,7 +111,7 @@ export default {
       addRecipeBtnClicked () {
       },
       isAuthorized () {
-        return false
+        return true
       }
   }
 }
