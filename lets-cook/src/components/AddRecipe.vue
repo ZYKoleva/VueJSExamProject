@@ -1,6 +1,12 @@
 <template>
   <div class="add-new-recipe-wrapper">
-    <form @submit.prevent="SaveRecipeBtnCliked()" enctype="multipart/form-data">
+    <div v-if="!this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="addRecipeBtnClicked">
+        <button class="btn-add-recipe">Add recipe</button>
+    </div>
+    <div v-if="this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="CancelBtnClicked">
+      <button class="btn-back-recipe">Cancel</button>
+    </div>
+    <form v-if="this.isAddRecipeClicked" @submit.prevent="SaveRecipeBtnCliked()" enctype="multipart/form-data">
       <div class="row">
         <div
           class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
@@ -42,9 +48,6 @@
         <div class="save-recipe-btn-wrapper" @type="submit">
             <button class="btn-save-recipe">Save recipe</button>
         </div>
-            <div>
-        <button class="btn-back-recipe" @click="CancelBtnClicked">Cancel</button>
-    </div>  
       </div>             
     </form>
 
@@ -67,9 +70,17 @@ export default {
         image: "",        
         description: "",
       },
+      isAddRecipeClicked: false
     };
   },
   methods: {
+    addRecipeBtnClicked () {
+        this.isAddRecipeClicked = true;
+        console.log("clicked");
+    },
+    CancelBtnClicked () {
+        this.isAddRecipeClicked = false;
+      },
     SaveRecipeBtnCliked() {
       this.IsSaveNewRecipeBtnClicked = true;
       let newRecipe = {
@@ -85,9 +96,6 @@ export default {
       }
       this.$emit("saveRecipeBtnWasClicked")
     },
-    CancelBtnClicked () {
-        this.$emit("CancelBtnClicked")
-    }
   },
 };
 </script>
@@ -95,6 +103,16 @@ export default {
 .recipe-name {
   height: 25px;
   width: 200px;
+}
+.add-recipe-btn-wrapper {
+  width: 100%;
+}
+.btn-add-recipe {
+  border-radius: 4px;
+  padding: 5px 10px;
+  background-color: midnightblue;
+  color: white;
+  margin: 10px;
 }
 .save-recipe-btn-wrapper {
   width: 100%;

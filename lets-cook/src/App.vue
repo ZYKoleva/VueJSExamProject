@@ -2,23 +2,18 @@
   <div id="app">
      <Header />
       <div class="main-wrapper">
-      <div v-for="my_recipe in my_recipes" v-bind:key="my_recipe.id">
-            <div>{{my_recipe.name}}</div>
-      </div>
       <Recipes
-        :recepies="recipes"
-        :ingredientsIHave="ingredientsIHave"
-        @recipeToggle="recipeToggle($event)"
-        @addItemToInventoryList="addItemToInventoryList($event)"
+        :recipes="recipes"
+        :my-recipes="myRecipes"
+        :isAuthorized="isAuthorized"
         @newRecipeSavedBtnClicked="newRecipeSavedBtnClicked($event)"
-      />
-      <InventoryList :ingredientsIHave="ingredientsIHave" />
-     
+      />   
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 import Recipes from './components/Recipes.vue';
 import Header from "./components/Header.vue";
 
@@ -28,6 +23,35 @@ export default {
   components: {
     Header,
     Recipes
+  }, 
+  data() {
+    return {
+      recipes: [],
+      myRecipes: [],
+      isAuthorized: false,
+    }
+
+  }, 
+  mounted () {
+    this.getAllRecipes (),
+    this.getMyRecipes ()
+  },
+  methods: {
+      getAllRecipes () {
+      axios({
+          method: 'get',
+          url: 'http://127.0.0.1:8000/cook_recipes/',
+          content_type: "application/json",
+      }).then ( response => this.recipes = response.data['recipes'])
+      },      
+      getMyRecipes () {
+          axios({
+              method: 'get',
+              url: 'http://127.0.0.1:8000/cook_recipes/auth/',
+              headers: {Authorization: 'Token d266b2b317d9e7525fdf18f78e0f32321ea21cca20b2abdff8b72bdb4d1b3f84'} ,
+              content_type: "application/json",
+          }).then ( response => this.myRecipes = response.data['recipes'])
+       },
   }
 }
 </script>
