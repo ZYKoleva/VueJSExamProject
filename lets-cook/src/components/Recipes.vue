@@ -1,6 +1,6 @@
 <template>
   <div class="recepies-wrapper">
-    <div class="add-recipe-main-wrapper">
+    <div class="add-recipe-main-wrapper" v-if="isAuthorized">
       <div v-if="!this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="addRecipeBtnClicked">
         <button class="btn-add-recipe">Add recipe</button>
       </div>
@@ -10,7 +10,7 @@
       />
     </div>
     <div class="articles-wrapper" v-if="isAuthorized">
-    <article v-for="recipe in my_recipes" v-bind:key="recipe.id">
+    <article v-for="(recipe, index) in my_recipes" v-bind:key="index">
       <div class="img-wrapper">
         <img
           :class="[canBeCooked() ? 'cookable' : 'notCookable']"
@@ -18,11 +18,11 @@
           alt=""
         />
       </div>
-      <h3 class="recipe-title" @click="show_hide =! show_hide">
+      <h3 class="recipe-title" @click="showHideDetails(recipe)">
         {{ recipe.name }} {{recipe.id}}
       </h3>
       <div>
-        <div v-if="show_hide" class="description-wrapper">
+        <div v-if="recipe.show_hide" class="description-wrapper">
           <h5>Preparation</h5>
           <p class="recipe-description">{{ recipe.description }}</p>
         </div>
@@ -30,7 +30,7 @@
     </article>    
     </div>
     <div class="articles-wrapper" v-else>
-    <article v-for="recipe in recipes" v-bind:key="recipe.id">
+    <article v-for="(recipe, index) in recipes" v-bind:key="index">
       <div class="img-wrapper">
         <img
           :class="[canBeCooked() ? 'cookable' : 'notCookable']"
@@ -38,11 +38,11 @@
           alt=""
         />
       </div>
-      <h3 class="recipe-title" @click="show_hide =! show_hide">
+      <h3 class="recipe-title" @click="showHideDetails(recipe)">
         {{ recipe.name }} {{recipe.id}}
       </h3>
       <div>
-        <div v-if="show_hide" class="description-wrapper">
+        <div v-if="recipe.show_hide" class="description-wrapper">
           <h5>Preparation</h5>
           <p class="recipe-description">{{ recipe.description }}</p>
         </div>
@@ -68,8 +68,7 @@ export default {
       return  {
           recipes: [],
           my_recipes: [],
-          isAuthorized: false,
-          show_hide: false,
+          isAuthorized: true,
           isAddRecipeClicked: false,
       }
   },
@@ -89,10 +88,10 @@ export default {
           axios({
               method: 'get',
               url: 'http://127.0.0.1:8000/cook_recipes/auth/',
-              headers: {Authorization: 'Token a5f5bd9559b7ee36f9582c0bc378476a090e6b50bc86f084a3fbe57c0e757f28'} ,
+              headers: {Authorization: 'Token 15a1b3fefcfd7d8d466cd9a3d3b233baeb02655709e00d32d99b8e638a3a9b5c'} ,
               content_type: "application/json",
           }).then ( response => this.my_recipes = response.data['recipes'])
-      },
+       },
       canBeCooked () {
         return false
       },
@@ -102,7 +101,14 @@ export default {
       },
       CancelBtnClicked () {
         this.isAddRecipeClicked = false;
-      }
+      },
+      showHideDetails(recipe) {
+       if(recipe.show_hide === false)  {
+          recipe.show_hide = true
+        } else {
+          recipe.show_hide = false
+        }
+      },           
   }
 }
 </script>
@@ -184,5 +190,12 @@ ul {
 .notCookable {
   border-radius: 6px;
   box-shadow: 0px 0px 5px 0px red;
+}
+.recipes-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 12px;
+  padding: 0;
+  margin: 0;
 }
 </style>

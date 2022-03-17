@@ -76,7 +76,6 @@ export default {
         name: this.recipeForm.name,
         image: this.recipeForm.image,
         description: this.recipeForm.description,
-        showDetails: false,
       }
       this.$emit("newRecipeSavedBtnClicked", newRecipe)
       this.recipeForm = {
