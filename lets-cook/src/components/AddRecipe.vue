@@ -6,7 +6,7 @@
     <div v-if="this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="CancelBtnClicked">
       <button class="btn-back-recipe">Cancel</button>
     </div>
-    <form v-if="this.isAddRecipeClicked" @submit.prevent="SaveRecipeBtnCliked()" enctype="multipart/form-data">
+    <form v-if="this.isAddRecipeClicked" action="" method="post" @submit.prevent="SaveRecipeBtnCliked" enctype="multipart/form-data">
       <div class="row">
         <div
           class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
@@ -14,7 +14,7 @@
           <div class="form-group">
             <label for="name">Recipe Name</label>
             <input
-              type="text"
+              type="text" 
               id="name"
               class="form-control recipe-name"
               v-model.lazy="recipeForm.name"
@@ -33,20 +33,21 @@
           </div>
           <div class="form-group">
             <label for="image">Picture</label>
-            <input
+            <!-- <input
               type="file"
               id="image"
               @change="filesChange($event.target.name, $event.target.files)"
               accept="image/*"
               class="input-file"
-            />
+            /> -->
+            <input type="file" @change="uploadFile" ref="file">
           </div>
           <!---->
         </div>
       </div>
       <div class="button-wrapper">
-        <div class="save-recipe-btn-wrapper" @type="submit">
-            <button class="btn-save-recipe">Save recipe</button>
+        <div class="save-recipe-btn-wrapper" type="submit">
+            <button type="submit" class="btn-save-recipe">Save recipe</button>
         </div>
       </div>             
     </form>
@@ -81,8 +82,12 @@ export default {
     CancelBtnClicked () {
         this.isAddRecipeClicked = false;
       },
-    SaveRecipeBtnCliked() {
+      uploadFile() {
+        this.recipeForm.image = this.$ref.file.files[0]
+      },
+    SaveRecipeBtnCliked () {
       this.IsSaveNewRecipeBtnClicked = true;
+      this.isAddRecipeClicked = false
       let newRecipe = {
         name: this.recipeForm.name,
         image: this.recipeForm.image,
@@ -94,8 +99,8 @@ export default {
         description: "",
         image: "",
       }
-      this.$emit("saveRecipeBtnWasClicked")
-    },
+      // this.$emit("saveRecipeBtnWasClicked")
+    }
   },
 };
 </script>

@@ -1,14 +1,21 @@
 <template>
   <div id="app">
-     <Header />
-      <div class="main-wrapper">
+    <Header />
+    <div class="main-wrapper">
+      <Register
+      @Registered = "Registered"
+      />
       <Recipes
-        :recipes="recipes"
-        :my-recipes="myRecipes"
-        :isAuthorized="isAuthorized"
-        @newRecipeSavedBtnClicked="newRecipeSavedBtnClicked($event)"
-      />   
+          :recipes="recipes"
+          :my-recipes="myRecipes"
+          :isAuthorized="isAuthorized"
+          @newRecipeSavedBtnClicked="newRecipeSavedBtnClicked"
+      />  
+      <Login
+      @LoggedIn = "LoggedIn"
+      /> 
     </div>
+
   </div>
 </template>
 
@@ -16,43 +23,81 @@
 import axios from 'axios'
 import Recipes from './components/Recipes.vue';
 import Header from "./components/Header.vue";
+import Login from "./components/Login.vue";
+import Register from "./components/Register.vue"
+
 
 
 export default {
   name: 'App',
   components: {
     Header,
-    Recipes
+    Recipes,
+    Login,
+    Register,
   }, 
   data() {
     return {
       recipes: [],
       myRecipes: [],
       isAuthorized: false,
+      token: "",
     }
 
   }, 
   mounted () {
-    this.getAllRecipes (),
+    this.getAllRecipes ()
     this.getMyRecipes ()
+  },
+   watch: {
+    token(newValue) {
+      if(this.isAuthorized) {
+        this.getMyRecipes (newValue);
+        console.log(newValue);
+      }
+    }
   },
   methods: {
       getAllRecipes () {
-      axios({
-          method: 'get',
-          url: 'http://127.0.0.1:8000/cook_recipes/',
-          content_type: "application/json",
-      }).then ( response => this.recipes = response.data['recipes'])
-      },      
+        axios({
+            method: 'get',
+            url: 'http://127.0.0.1:8000/cook_recipes/',
+            headers: {
+              "content-type": "application/json"
+              },
+          }).then ( response => this.recipes = response.data['recipes'])
+        },      
       getMyRecipes () {
-          axios({
-              method: 'get',
-              url: 'http://127.0.0.1:8000/cook_recipes/auth/',
-              headers: {Authorization: 'Token d266b2b317d9e7525fdf18f78e0f32321ea21cca20b2abdff8b72bdb4d1b3f84'} ,
-              content_type: "application/json",
+        axios({
+          method: 'get',
+          url: 'http://127.0.0.1:8000/cook_recipes/auth/',
+          headers: {
+            Authorization: `Token ${this.token}`,
+            "content-type": "application/json"
+          },
           }).then ( response => this.myRecipes = response.data['recipes'])
-       },
-  }
+        },
+      LoggedIn(token) {
+        this.isAuthorized = true;
+        this.token = token;
+        this.getMyRecipes(this.token);
+      },
+      Registered(token) {
+        this.token = token;
+        this.getMyRecipes (this.token);
+        this.isAuthorized = true;
+      },
+      newRecipeSavedBtnClicked(newRecipe) {
+        axios({
+          method: 'post',
+          url: 'http://127.0.0.1:8000/cook_recipes/auth/',
+          headers: {Authorization: `Token ${this.token}`,
+          "content-type": "multipart/form-data"} ,
+          data: newRecipe
+          }).then ( response => this.myRecipes = response.data['recipes'])
+      }
+  },
+ 
 }
 </script>
 

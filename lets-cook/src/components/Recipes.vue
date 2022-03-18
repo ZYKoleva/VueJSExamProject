@@ -2,6 +2,7 @@
   <div class="recepies-wrapper">
     <div class="add-recipe-main-wrapper">
       <AddRecipe v-if="isAuthorized"
+      @newRecipeSavedBtnClicked="newRecipeSavedBtnClicked"
       />
     </div>
     <Recipe class="articles-wrapper" v-if="isAuthorized"
@@ -47,7 +48,10 @@ export default {
       // },
       showHideDetails(recipe) {
         recipe.show_hide = !recipe.show_hide;
-      },           
+      }, 
+      newRecipeSavedBtnClicked(newRecipe){
+        this.$emit("newRecipeSavedBtnClicked", newRecipe)
+      }          
   }
 }
 </script>
