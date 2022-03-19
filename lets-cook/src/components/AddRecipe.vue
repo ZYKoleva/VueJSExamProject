@@ -6,7 +6,7 @@
     <div v-if="this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="CancelBtnClicked">
       <button class="btn-back-recipe">Cancel</button>
     </div>
-    <form v-if="this.isAddRecipeClicked" action="" method="post" @submit.prevent="SaveRecipeBtnCliked" enctype="multipart/form-data">
+    <form v-if="this.isAddRecipeClicked" action="" method="post" @submit.prevent="SaveRecipeBtnClicked" enctype="multipart/form-data">
       <div class="row">
         <div
           class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
@@ -33,14 +33,11 @@
           </div>
           <div class="form-group">
             <label for="image">Picture</label>
-            <!-- <input
+            <input
               type="file"
               id="image"
-              @change="filesChange($event.target.name, $event.target.files)"
-              accept="image/*"
-              class="input-file"
-            /> -->
-            <input type="file" @change="uploadFile" ref="file">
+              @change="onFileUpload"
+            />
           </div>
           <!---->
         </div>
@@ -55,7 +52,6 @@
   </div>
 </template>
 <script>
-
 export default {
   name: "AddRecipe",
   props: {
@@ -71,7 +67,9 @@ export default {
         image: "",        
         description: "",
       },
-      isAddRecipeClicked: false
+      isAddRecipeClicked: false,
+      dialogImageUrl: '',
+      dialogVisible: false
     };
   },
   methods: {
@@ -82,26 +80,35 @@ export default {
     CancelBtnClicked () {
         this.isAddRecipeClicked = false;
       },
-      uploadFile() {
-        this.recipeForm.image = this.$ref.file.files[0]
+      onFileUpload(event) {
+        this.recipeForm.image = event.target.files[0]
+        console.log(event)
       },
-    SaveRecipeBtnCliked () {
-      this.IsSaveNewRecipeBtnClicked = true;
-      this.isAddRecipeClicked = false
-      let newRecipe = {
-        name: this.recipeForm.name,
-        image: this.recipeForm.image,
-        description: this.recipeForm.description,
-      }
-      this.$emit("newRecipeSavedBtnClicked", newRecipe)
-      this.recipeForm = {
-        name: "",
-        description: "",
-        image: "",
-      }
+      SaveRecipeBtnClicked() {
+        this.IsSaveNewRecipeBtnClicked = true;
+        this.isAddRecipeClicked = false
+        let newRecipe = {
+          name: this.recipeForm.name,
+          image: this.recipeForm.image,
+          description: this.recipeForm.description,
+        }
+        console.log("before emitting the newRecepi to function", newRecipe)
+        this.$emit("SaveRecipeBtnClicked", newRecipe)
+
+      },
       // this.$emit("saveRecipeBtnWasClicked")
-    }
+    handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+    handlePictureCardPreview(file) {
+      console.log(file.url)
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+      this.recipeForm.image = this.dialogImageUrl;
+      console.log(this.recipeForm.image)
+    },
   },
+  
 };
 </script>
 <style scoped>

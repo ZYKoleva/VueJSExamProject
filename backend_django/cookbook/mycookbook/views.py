@@ -26,12 +26,12 @@ class RecipesListApiView(rest_views.APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RecipeDetailsApiView(rest_views.APIView):
     def get(self, request, pk):
         recipe = Recipe.objects.get(pk=pk)
         serializer = RecipeSerializer(recipe, many=False, context={'request': request})
         return Response({"recipe": serializer.data})
-
 
     def delete(self, request, pk):
         recipe = Recipe.objects.get(pk=pk)
@@ -60,6 +60,7 @@ class RecipesAuthListApiView(rest_views.APIView):
 
     def post(self, request):
         serializer = RecipeSerializer(data=request.data, context={'request': request})
+
         if serializer.is_valid():
             recipe = serializer.save()
             my_recipe = MyRecipe(created_by=request.user, user_product=recipe)

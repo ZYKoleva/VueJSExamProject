@@ -2,7 +2,7 @@
   <div class="recepies-wrapper">
     <div class="add-recipe-main-wrapper">
       <AddRecipe v-if="isAuthorized"
-      @newRecipeSavedBtnClicked="newRecipeSavedBtnClicked"
+      @SaveRecipeBtnClicked="SaveRecipeBtnClicked"
       />
     </div>
     <Recipe class="articles-wrapper" v-if="isAuthorized"
@@ -24,7 +24,7 @@ export default {
   props: {
     recipes: Array,
     myRecipes: Array,
-    isAuthorized: Boolean
+    isAuthorized: Boolean,
   },
   components: {
     AddRecipe,
@@ -39,18 +39,18 @@ export default {
       canBeCooked () {
         return true
       },
-      // addRecipeBtnClicked () {
-      //   this.isAddRecipeClicked = true;
-      //   console.log("clicked");
-      // },
-      // CancelBtnClicked () {
-      //   this.isAddRecipeClicked = false;
-      // },
+      addRecipeBtnClicked () {
+        this.isAddRecipeClicked = true;
+        console.log("clicked");
+      },
+      CancelBtnClicked () {
+        this.isAddRecipeClicked = false;
+      },
       showHideDetails(recipe) {
         recipe.show_hide = !recipe.show_hide;
       }, 
-      newRecipeSavedBtnClicked(newRecipe){
-        this.$emit("newRecipeSavedBtnClicked", newRecipe)
+      SaveRecipeBtnClicked(newRecipe){
+        this.$emit("SaveRecipeBtnClicked", newRecipe)
       }          
   }
 }

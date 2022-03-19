@@ -9,7 +9,7 @@
           :recipes="recipes"
           :my-recipes="myRecipes"
           :isAuthorized="isAuthorized"
-          @newRecipeSavedBtnClicked="newRecipeSavedBtnClicked"
+          @SaveRecipeBtnClicked="SaveRecipeBtnClicked"
       />  
       <Login
       @LoggedIn = "LoggedIn"
@@ -87,15 +87,22 @@ export default {
         this.getMyRecipes (this.token);
         this.isAuthorized = true;
       },
-      newRecipeSavedBtnClicked(newRecipe) {
+      SaveRecipeBtnClicked(newRecipe){
+        const formData = new FormData();
+        formData.append('image', newRecipe.image);
+        formData.append('description', newRecipe.description);
+        formData.append('name', newRecipe.name);
         axios({
           method: 'post',
           url: 'http://127.0.0.1:8000/cook_recipes/auth/',
-          headers: {Authorization: `Token ${this.token}`,
-          "content-type": "multipart/form-data"} ,
-          data: newRecipe
+          headers: {
+            Authorization: `Token ${this.token}`} ,
+          data: formData
           }).then ( response => this.myRecipes = response.data['recipes'])
+          console.log(newRecipe)
+          this.getMyRecipes();
       }
+       
   },
  
 }
