@@ -1,6 +1,12 @@
 <template>
   <div class="add-new-recipe-wrapper">
-    <form @submit.prevent="SaveRecipeBtnCliked()" enctype="multipart/form-data">
+    <div v-if="!this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="addRecipeBtnClicked">
+        <button class="btn-add-recipe">Add recipe</button>
+    </div>
+    <div v-if="this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="CancelBtnClicked">
+      <button class="btn-back-recipe">Cancel</button>
+    </div>
+    <form v-if="this.isAddRecipeClicked" action="" method="post" @submit.prevent="SaveRecipeBtnClicked" enctype="multipart/form-data">
       <div class="row">
         <div
           class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
@@ -8,7 +14,7 @@
           <div class="form-group">
             <label for="name">Recipe Name</label>
             <input
-              type="text"
+              type="text" 
               id="name"
               class="form-control recipe-name"
               v-model.lazy="recipeForm.name"
@@ -30,28 +36,22 @@
             <input
               type="file"
               id="image"
-              @change="filesChange($event.target.name, $event.target.files)"
-              accept="image/*"
-              class="input-file"
+              @change="onFileUpload"
             />
           </div>
           <!---->
         </div>
       </div>
       <div class="button-wrapper">
-        <div class="save-recipe-btn-wrapper" @type="submit">
-            <button class="btn-save-recipe">Save recipe</button>
+        <div class="save-recipe-btn-wrapper" type="submit">
+            <button type="submit" class="btn-save-recipe">Save recipe</button>
         </div>
-            <div>
-        <button class="btn-back-recipe" @click="CancelBtnClicked">Cancel</button>
-    </div>  
       </div>             
     </form>
 
   </div>
 </template>
 <script>
-
 export default {
   name: "AddRecipe",
   props: {
@@ -67,34 +67,64 @@ export default {
         image: "",        
         description: "",
       },
+      isAddRecipeClicked: false,
+      dialogImageUrl: '',
+      dialogVisible: false
     };
   },
   methods: {
-    SaveRecipeBtnCliked() {
-      this.IsSaveNewRecipeBtnClicked = true;
-      let newRecipe = {
-        name: this.recipeForm.name,
-        image: this.recipeForm.image,
-        description: this.recipeForm.description,
-      }
-      this.$emit("newRecipeSavedBtnClicked", newRecipe)
-      this.recipeForm = {
-        name: "",
-        description: "",
-        image: "",
-      }
-      this.$emit("saveRecipeBtnWasClicked")
+    addRecipeBtnClicked () {
+        this.isAddRecipeClicked = true;
+        console.log("clicked");
     },
     CancelBtnClicked () {
-        this.$emit("CancelBtnClicked")
-    }
+        this.isAddRecipeClicked = false;
+      },
+      onFileUpload(event) {
+        this.recipeForm.image = event.target.files[0]
+        console.log(event)
+      },
+      SaveRecipeBtnClicked() {
+        this.IsSaveNewRecipeBtnClicked = true;
+        this.isAddRecipeClicked = false
+        let newRecipe = {
+          name: this.recipeForm.name,
+          image: this.recipeForm.image,
+          description: this.recipeForm.description,
+        }
+        console.log("before emitting the newRecepi to function", newRecipe)
+        this.$emit("SaveRecipeBtnClicked", newRecipe)
+
+      },
+      // this.$emit("saveRecipeBtnWasClicked")
+    handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+    handlePictureCardPreview(file) {
+      console.log(file.url)
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+      this.recipeForm.image = this.dialogImageUrl;
+      console.log(this.recipeForm.image)
+    },
   },
+  
 };
 </script>
 <style scoped>
 .recipe-name {
   height: 25px;
   width: 200px;
+}
+.add-recipe-btn-wrapper {
+  width: 100%;
+}
+.btn-add-recipe {
+  border-radius: 4px;
+  padding: 5px 10px;
+  background-color: midnightblue;
+  color: white;
+  margin: 10px;
 }
 .save-recipe-btn-wrapper {
   width: 100%;

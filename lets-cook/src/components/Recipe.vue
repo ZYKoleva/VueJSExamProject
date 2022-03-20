@@ -1,57 +1,54 @@
 <template>
-  <div class="recepies-wrapper">
-    <div class="add-recipe-main-wrapper">
-      <AddRecipe v-if="isAuthorized"
-      @SaveRecipeBtnClicked="SaveRecipeBtnClicked"
-      />
-    </div>
-    <Recipe class="articles-wrapper" v-if="isAuthorized"
-      :listRecipes="myRecipes"
-    />
-    <Recipe class="articles-wrapper" v-else
-      :listRecipes="recipes"
-    />   
-  </div> 
+  <div>
+    <article v-for="(recipe, index) in listRecipes" v-bind:key="index">
+      <div class="img-wrapper">
+        <img
+          :class="[canBeCooked() ? 'cookable' : 'notCookable']"
+          :src="recipe.image"
+          alt=""
+        />
+      </div>
+      <h3 class="recipe-title" @click="showHideDetails(recipe)">
+        {{ recipe.name }} {{recipe.id}}
+      </h3>
+      <div>
+        <div v-if="recipe.show_hide" class="description-wrapper">
+          <h5>Preparation</h5>
+          <p class="recipe-description">{{ recipe.description }}</p>
+        </div>
+      </div>
+    </article> 
+  </div>   
 </template>
 
 <script>
-
-import AddRecipe from "./AddRecipe.vue"
-import Recipe from "./Recipe.vue"
-
 export default {
-  name: 'Recipes',
+  name: 'Recipe',
   props: {
-    recipes: Array,
-    myRecipes: Array,
-    isAuthorized: Boolean,
+    listRecipes: Array,
   },
   components: {
-    AddRecipe,
-    Recipe,
+
   },
   data () {
       return  {
-          isAddRecipeClicked: false,
+
       }
   },
   methods: {
       canBeCooked () {
         return true
       },
-      addRecipeBtnClicked () {
-        this.isAddRecipeClicked = true;
-        console.log("clicked");
-      },
-      CancelBtnClicked () {
-        this.isAddRecipeClicked = false;
-      },
+      // addRecipeBtnClicked () {
+      //   this.isAddRecipeClicked = true;
+      //   console.log("clicked");
+      // },
+      // CancelBtnClicked () {
+      //   this.isAddRecipeClicked = false;
+      // },
       showHideDetails(recipe) {
         recipe.show_hide = !recipe.show_hide;
-      }, 
-      SaveRecipeBtnClicked(newRecipe){
-        this.$emit("SaveRecipeBtnClicked", newRecipe)
-      }          
+      },           
   }
 }
 </script>
