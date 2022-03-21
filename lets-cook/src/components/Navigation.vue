@@ -7,36 +7,35 @@
     <el-menu-item index="2"><router-link :to="{ name: 'allRecipes' }">All Recipes <span>({{numAllRecipes}})</span></router-link></el-menu-item>
     <el-menu-item index="3"><router-link :to="{ name: 'myRecipes' }">My Recipes <span v-if="isAuthenticated">({{numMyRecipes}})</span></router-link></el-menu-item>
     <el-menu-item index="4"><router-link :to="{ name: 'addRecipe' }">Add Recipe</router-link></el-menu-item>
-    <el-menu-item index="5"><router-link :to="{ name: 'login' }">Login/Register <span v-if="isAuthenticated">({{username}})</span></router-link></el-menu-item>
+    <el-menu-item index="5"><router-link :to="{ name: 'myFavRecipes' }">My Favorite Recipes <span>({{numFavRecipes}})</span></router-link></el-menu-item>
+    <el-menu-item index="6"><router-link :to="{ name: 'login' }">Login/Register <span v-if="isAuthenticated">({{username}})</span></router-link></el-menu-item>
   </el-menu>
 </template>
 <script>
 import { getAllRecipes } from "../dataProviders/recipes.js"
 import { getMyRecipes } from "../dataProviders/recipes.js"
+import { getMyFavouriteRecipes } from "../dataProviders/recipes.js"
 export default {
   data(){
     return {
       numAllRecipes: '',
       numMyRecipes: '',
+      numFavRecipes: '',
       isAuthenticated: true,
-      username: 'Pesho'
+      username: 'Pesho',
     }
   },
   async created(){
-        const numRec = await getAllRecipes();
-        this.numAllRecipes = numRec.length;
-        if(this.isAuthenticated === true) {
-          const myNumRec = await getMyRecipes();
-          this.numMyRecipes = myNumRec.length;
-        }
+    const numRec = await getAllRecipes();
+    this.numAllRecipes = numRec.length;
+    if(this.isAuthenticated === true) {
+      const myNumRec = await getMyRecipes();
+      this.numMyRecipes = myNumRec.length;
+      const myFavRec = await getMyFavouriteRecipes();
+      this.numFavRecipes = myFavRec.length;
     }
-  // methods: {
-  //   async getNumAllRecipes(){
-  //       const allRecipes = await getAllRecipes()
-  //       this.numAllRecipes = allRecipes.length()
-  //       console.log(this.numAllRecipes)
-  //   }
-  // }
+  },
+  
 };
 
 </script>

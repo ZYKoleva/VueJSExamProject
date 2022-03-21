@@ -11,7 +11,7 @@
       <div class="btn-wrapper">
         <a class="heart-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
         <a class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</a>
-        <a v-if="!listIDsFavouriteRecipes.includes(recipe.id)" href='' @click.prevent="markedAsFavourite(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
+        <a class="xmark-icon" @click="removeFromFavourite(recipe)">❌</a>
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
         {{ recipe.name }} {{recipe.id}}        
@@ -29,12 +29,9 @@
 
 <script>
 import axios from 'axios'
-import { getAllRecipes, getMyFavouriteRecipesIds } from "../dataProviders/recipes.js"
+import { getMyFavouriteRecipes } from "../dataProviders/recipes.js"
 export default {
-  name: 'RecipesList',
-  // props: {
-  //   listRecipes: Array
-  // },  
+  name: 'MyFavoriteRecipesList',
   components: {
   },
   data() {
@@ -46,49 +43,26 @@ export default {
       }
     },
     async created(){
-        this.listRecipes = await getAllRecipes();
-        this.listIDsFavouriteRecipes = await getMyFavouriteRecipesIds();        
-
+        this.listRecipes = await getMyFavouriteRecipes();
     },
     methods: {
         canBeCooked () {
           return true
         },
     async showHideDetails(recipe) {
-      const formData = new FormData();
       if (this.showDetailsIDs.includes(recipe.id)){
         this.showDetailsIDs = []
       } else {
         this.showDetailsIDs = []
         this.showDetailsIDs.push(recipe.id)
-        const new_num = recipe.viewed + 1;
-        formData.append('viewed', new_num)
       }
-      await axios.put(
-      `http://127.0.0.1:8000/cook_recipes/${recipe.id}/`,
-      formData
-      )
-      const response = await axios.get("http://127.0.0.1:8000/cook_recipes/");
-      this.listRecipes = response.data['recipes'];
-    },  
-    async liked(recipe) {
-      const formData = new FormData();
-      const new_num = recipe.liked + 1;
-      formData.append('liked', new_num)
-      await axios.put(
-      `http://127.0.0.1:8000/cook_recipes/${recipe.id}/`,
-      formData
-      )
-      const response = await axios.get("http://127.0.0.1:8000/cook_recipes/");
-      this.listRecipes = response.data['recipes'];
-    },
-    async markedAsFavourite(recipe){
+    },     
+    async removeFromFavourite(recipe){
       const headers = {Authorization: `Token ${this.token}`}
-      await axios.post(
-      `http://127.0.0.1:8000/cook_recipes/my_favorite_recipes/${recipe.id}/`,
-      {}, {headers: headers}
+      await axios.delete(
+      `http://127.0.0.1:8000/cook_recipes/my_favorite_recipes/${recipe.id}/`, {headers: headers}
       )
-      this.listIDsFavouriteRecipes.push(recipe.id)
+      this.listRecipes = await getMyFavouriteRecipes()
     },
     
   },
@@ -144,13 +118,14 @@ img {
   text-align: left;
 }
 .thumbs-icon {
-  margin: 10px;
+  margin-left: 10px;
 }
 .eye-icon {
-  margin: 10px;
+  margin-left: 10px;
 }
-.heart-icon {
-  margin: 10px;
+.xmark-icon {
+    margin-left: 50px;
+
 }
 
 ul {

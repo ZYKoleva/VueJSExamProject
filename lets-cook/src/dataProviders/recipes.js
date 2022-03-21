@@ -29,3 +29,22 @@ export async function getMyRecipes(){
         return [];
     }
 }
+
+export async function getMyFavouriteRecipes() {
+    const headers = {Authorization: `Token ${token}`}
+    try {
+    const response = await axios.get(
+        `http://127.0.0.1:8000/cook_recipes/my_favorite_recipes/`, {headers})         
+        return response.data['recipes']
+    } catch (err) {
+        console.error("Unexpected error occured while trying to get your favorite recipes", err);
+        return [];
+    }
+
+  }
+  export async function getMyFavouriteRecipesIds() {
+    const list_fav_recipes = await getMyFavouriteRecipes();
+    let list_ids_fav_recipes = [];
+    list_fav_recipes.forEach( rec => list_ids_fav_recipes.push(rec["id"]));
+    return list_ids_fav_recipes
+  }

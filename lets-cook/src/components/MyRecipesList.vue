@@ -9,9 +9,9 @@
         />
       </div>
       <div class="btn-wrapper">
-        <a class="heart-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
-        <a class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</a>
-        <a v-if="!listIDsFavouriteRecipes.includes(recipe.id)" href='' @click.prevent="markedAsFavourite(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
+        <div class="thumbs-icon"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</div>
+        <div class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</div>
+        <a class="xmark-icon" @click="deleteMyRecipe(recipe)">❌</a>
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
         {{ recipe.name }} {{recipe.id}}        
@@ -28,13 +28,10 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { getAllRecipes, getMyFavouriteRecipesIds } from "../dataProviders/recipes.js"
+import { getMyRecipes } from "../dataProviders/recipes.js";
+import axios from 'axios';
 export default {
   name: 'RecipesList',
-  // props: {
-  //   listRecipes: Array
-  // },  
   components: {
   },
   data() {
@@ -42,54 +39,30 @@ export default {
         listRecipes: [],
         showDetailsIDs: [],
         token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
-        listIDsFavouriteRecipes: [],
       }
     },
     async created(){
-        this.listRecipes = await getAllRecipes();
-        this.listIDsFavouriteRecipes = await getMyFavouriteRecipesIds();        
-
+        this.listRecipes = await getMyRecipes();
     },
     methods: {
         canBeCooked () {
           return true
         },
     async showHideDetails(recipe) {
-      const formData = new FormData();
       if (this.showDetailsIDs.includes(recipe.id)){
         this.showDetailsIDs = []
       } else {
         this.showDetailsIDs = []
         this.showDetailsIDs.push(recipe.id)
-        const new_num = recipe.viewed + 1;
-        formData.append('viewed', new_num)
       }
-      await axios.put(
-      `http://127.0.0.1:8000/cook_recipes/${recipe.id}/`,
-      formData
-      )
-      const response = await axios.get("http://127.0.0.1:8000/cook_recipes/");
-      this.listRecipes = response.data['recipes'];
     },  
-    async liked(recipe) {
-      const formData = new FormData();
-      const new_num = recipe.liked + 1;
-      formData.append('liked', new_num)
-      await axios.put(
-      `http://127.0.0.1:8000/cook_recipes/${recipe.id}/`,
-      formData
-      )
-      const response = await axios.get("http://127.0.0.1:8000/cook_recipes/");
-      this.listRecipes = response.data['recipes'];
-    },
-    async markedAsFavourite(recipe){
+    async deleteMyRecipe(recipe) {
       const headers = {Authorization: `Token ${this.token}`}
-      await axios.post(
-      `http://127.0.0.1:8000/cook_recipes/my_favorite_recipes/${recipe.id}/`,
-      {}, {headers: headers}
+      await axios.delete(
+      `http://127.0.0.1:8000/cook_recipes/auth/${recipe.id}/`, {headers: headers}
       )
-      this.listIDsFavouriteRecipes.push(recipe.id)
-    },
+      this.listRecipes = await getMyRecipes()
+    }
     
   },
 }
@@ -145,12 +118,16 @@ img {
 }
 .thumbs-icon {
   margin: 10px;
+  color: grey;
+
 }
 .eye-icon {
   margin: 10px;
+  color: grey;
 }
 .heart-icon {
   margin: 10px;
+  color: grey;
 }
 
 ul {

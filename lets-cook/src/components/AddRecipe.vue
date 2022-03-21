@@ -63,7 +63,7 @@ export default {
         image: "",        
         description: "",
       },
-      token: 'dda4d5e2f8781ca4462eee41552d2013b83cb4115e2aae98b40d458dbe0ee4e2',
+      token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
     };
   },
   methods: {

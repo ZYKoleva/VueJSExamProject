@@ -13,3 +13,8 @@ class Recipe(models.Model):
 class MyRecipe(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     user_product = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+
+class MyFavoriteRecipes(models.Model):
+    fav_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    fav_recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)

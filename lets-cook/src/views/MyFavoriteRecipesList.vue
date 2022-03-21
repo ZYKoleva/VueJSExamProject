@@ -1,23 +1,24 @@
 <template>
     <div class="recepies-wrapper">
-        <MyRecipesList v-if="isLoggedIn"/>
+        <MyFavoriteRecipesList v-if="isLoggedIn"
+        />       
         <div v-else>
-            <p>You need to be logged in in order to see your recipes. Click <a href='' @click.prevent="goToLogin">here</a> to be redirected to login page</p>
+            <p>You need to be logged in in order to see your favorite recipes. Click <a href='' @click.prevent="goToLogin">here</a> to be redirected to login page</p>
         </div>
     </div>
 </template>
 <script>
-import MyRecipesList from "@/components/MyRecipesList.vue"
+import MyFavoriteRecipesList from "@/components/MyFavoriteRecipesList.vue"
 
 export default {
     components: {
-        MyRecipesList,
+        MyFavoriteRecipesList,
     },
     data() {
         return {
             isLoggedIn: true,
         }
-    },
+    },  
     methods: {
         goToLogin(){
             this.$router.push({name: "login"})
