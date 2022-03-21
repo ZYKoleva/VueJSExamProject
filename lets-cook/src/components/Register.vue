@@ -48,7 +48,8 @@ export default {
             password: '',            
         },
         password2: '',
-        error: "",
+        error: '',
+        token: ''
     }
   },
     validations: {
@@ -65,15 +66,24 @@ export default {
         }
     },
   methods: {
-    onRegister(){
-        console.log('vuelidate', this.$v)
-        axios({
-          method: 'post',
-          url: 'http://127.0.0.1:8000/auth/register/',
-          content_type: "application/json",
-          data: this.registerData,
-        }).then ( response => this.token = response.data['token'])
-        this.$emit("Registered", this.token)
+    async onRegister(){
+      try {
+        const response = await axios.post(
+          'http://127.0.0.1:8000/auth/register/', this.registerData)
+        this.token = response.data['token']
+        this.$router.push({name: "myRecipes"})
+      } catch (err) {
+        console.error("An error occur during registration", err);
+          return [];
+      }
+
+        // axios({
+        //   method: 'post',
+        //   url: 'http://127.0.0.1:8000/auth/register/',
+        //   content_type: "application/json",
+        //   data: this.registerData,
+        // }).then ( response => this.token = response.data['token'])
+        // this.$emit("Registered", this.token)
       },
     },
 };

@@ -13,7 +13,7 @@ class RecipesListApiView(rest_views.APIView):
 
     def get(self, request):
         recipes = Recipe.objects.all()
-        serializer = RecipeSerializer(recipes, many=True, context={'request': request})
+        serializer = RecipeSerializer(sorted(recipes, key=lambda x: x.id, reverse=True), many=True, context={'request': request})
         return Response({"recipes": serializer.data})
 
     def post(self, request):

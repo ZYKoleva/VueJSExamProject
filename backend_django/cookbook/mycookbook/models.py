@@ -6,7 +6,8 @@ class Recipe(models.Model):
     name = models.CharField(max_length=100, default="Name")
     image = models.ImageField(upload_to='images')
     description = models.TextField(max_length=1000, blank=True)
-    show_hide = models.BooleanField(default=False)
+    viewed = models.IntegerField(default=0)
+    liked = models.IntegerField(default=0)
 
 
 class MyRecipe(models.Model):

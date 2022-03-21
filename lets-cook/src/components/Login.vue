@@ -32,14 +32,23 @@ export default {
       }
   },
   methods: {
-    onLogin(){
-        axios({
-          method: 'post',
-          url: 'http://127.0.0.1:8000/auth/login/',
-          content_type: "application/json",
-          data: this.loginData,
-        }).then ( response => this.token = response.data['token'])
-        this.$emit("LoggedIn", this.token)
+    async onLogin(){
+        // axios({
+        //   method: 'post',
+        //   url: 'http://127.0.0.1:8000/auth/login/',
+        //   content_type: "application/json",
+        //   data: this.loginData,
+        // }).then ( response => this.token = response.data['token'])
+        // this.$emit("LoggedIn", this.token)
+        try {
+          const response = await axios.post(
+          'http://127.0.0.1:8000/auth/login/', this.loginData)
+          this.token = response.data['token']
+          this.$router.push({name: "myRecipes"})
+        } catch (err) {
+          console.error("An error occur during authentication", err);
+          return [];
+        }
       },
     },
 };
