@@ -1,12 +1,6 @@
 <template>
   <div class="add-new-recipe-wrapper">
-    <div v-if="!this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="addRecipeBtnClicked">
-        <button class="btn-add-recipe">Add recipe</button>
-    </div>
-    <div v-if="this.isAddRecipeClicked" class="add-recipe-btn-wrapper" @click="CancelBtnClicked">
-      <button class="btn-back-recipe">Cancel</button>
-    </div>
-    <form v-if="this.isAddRecipeClicked" action="" method="post" @submit.prevent="SaveRecipeBtnClicked" enctype="multipart/form-data">
+    <form class="add-form" action="" method="post" @submit.prevent="SaveRecipeBtnClicked" enctype="multipart/form-data">
       <div class="row">
         <div
           class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
@@ -19,102 +13,97 @@
               class="form-control recipe-name"
               v-model.lazy="recipeForm.name"
             />
-            <!---->
+     
           </div>
           <div class="form-group">
             <label for="description">Description</label>
-            <textarea
+            <textarea rows="8" cols="50"
               type="text"
               id="description"
               class="form-control recipe-description"
               v-model.lazy="recipeForm.description"
             />
-            <!---->
+         
           </div>
           <div class="form-group">
-            <label for="image">Picture</label>
+            <label for="image">
+              <span class="span-picture">Picture</span>
+
+              </label>
             <input
               type="file"
               id="image"
               @change="onFileUpload"
             />
           </div>
-          <!---->
+      
         </div>
       </div>
       <div class="button-wrapper">
         <div class="save-recipe-btn-wrapper" type="submit">
             <button type="submit" class="btn-save-recipe">Save recipe</button>
         </div>
-      </div>             
+      </div>   
     </form>
 
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   name: "AddRecipe",
   props: {
     },
   components: {
-
   },
   data() {
     return {
-      IsSaveNewRecipeBtnClicked: false,
       recipeForm: {
         name: "",
         image: "",        
         description: "",
       },
-      isAddRecipeClicked: false,
-      dialogImageUrl: '',
-      dialogVisible: false
+      token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
     };
   },
   methods: {
-    addRecipeBtnClicked () {
-        this.isAddRecipeClicked = true;
-        console.log("clicked");
-    },
-    CancelBtnClicked () {
-        this.isAddRecipeClicked = false;
-      },
-      onFileUpload(event) {
+    onFileUpload(event) {
         this.recipeForm.image = event.target.files[0]
-        console.log(event)
       },
       SaveRecipeBtnClicked() {
-        this.IsSaveNewRecipeBtnClicked = true;
-        this.isAddRecipeClicked = false
-        let newRecipe = {
-          name: this.recipeForm.name,
-          image: this.recipeForm.image,
-          description: this.recipeForm.description,
-        }
-        console.log("before emitting the newRecepi to function", newRecipe)
-        this.$emit("SaveRecipeBtnClicked", newRecipe)
-
+        console.log("btn was clicked")
+        // let newRecipe = {
+        //   name: this.recipeForm.name,
+        //   image: this.recipeForm.image,
+        //   description: this.recipeForm.description,
+        // }
+        const formData = new FormData();
+        formData.append('image', this.recipeForm.image);
+        formData.append('description', this.recipeForm.description);
+        formData.append('name', this.recipeForm.name);
+        axios({
+          method: 'post',
+          url: 'http://127.0.0.1:8000/cook_recipes/auth/',
+          headers: {
+            Authorization: `Token ${this.token}`} ,
+          data: formData
+          }).then ( response => this.myRecipes = response.data['recipes'])
       },
-      // this.$emit("saveRecipeBtnWasClicked")
-    handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-    handlePictureCardPreview(file) {
-      console.log(file.url)
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
-      this.recipeForm.image = this.dialogImageUrl;
-      console.log(this.recipeForm.image)
-    },
   },
   
 };
 </script>
 <style scoped>
+
+.add-new-recipe-wrapper {
+  margin: 50px;
+}
 .recipe-name {
   height: 25px;
   width: 200px;
+}
+.span-picture {
+  margin-right: 10px;
 }
 .add-recipe-btn-wrapper {
   width: 100%;
@@ -134,10 +123,11 @@ export default {
     display: flex;
  
 }
+
 .btn-save-recipe {
   border-radius: 4px;
   padding: 5px 10px;
-  background-color: lightseagreen;
+  background-color: lightskyblue;
   color: white;
   margin: 10px;
 }
