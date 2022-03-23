@@ -1,8 +1,9 @@
 <template>
     <div >
         <div v-if="!registerLinkClicked">
-        <Login />
-        <p>Click <a href='' @click.prevent="register">here</a> if you do not have registration yet.</p>
+        <Login 
+        @LoggedIn="LoggedIn"/>
+        <p class="register-link">Click <a href='' @click.prevent="register">here</a> if you do not have registration yet.</p>
         </div>
         <Register v-if="registerLinkClicked"/>
     </div>
@@ -27,10 +28,15 @@ export default {
         register(){
             this.registerLinkClicked = true;
             
+        },
+        LoggedIn(){
+            this.$emit("LoggedIn")
         }
     }
 }
 </script>
 <style scoped>
-
+.register-link {
+    margin: 50px;
+}
 </style>

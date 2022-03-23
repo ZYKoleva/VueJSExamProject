@@ -1,16 +1,16 @@
 <template>
     <div class="recepies-wrapper">
-    <article class="recepies-wrapper" v-for="(recipe, index) in listRecipes" v-bind:key="index">
+    <article class="recepies-wrapper" v-for="(recipe, index) in getMyFavoriteRecipes" v-bind:key="index">
       <div class="img-wrapper">
         <img
-          :class="[canBeCooked() ? 'cookable' : 'notCookable']"
+          class="cookable"
           :src="recipe.image"
           alt=""
         />
       </div>
       <div class="btn-wrapper">
-        <a class="heart-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
-        <a class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</a>
+        <div class="thumbs-icon"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</div>
+        <div class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</div>
         <a class="xmark-icon" @click="removeFromFavourite(recipe)">❌</a>
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
@@ -28,27 +28,22 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { getMyFavouriteRecipes } from "../dataProviders/recipes.js"
+import {mapGetters} from "vuex"
 export default {
   name: 'MyFavoriteRecipesList',
   components: {
   },
   data() {
     return {
-        listRecipes: [],
         showDetailsIDs: [],
-        token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
-        listIDsFavouriteRecipes: [],
       }
     },
     async created(){
-        this.listRecipes = await getMyFavouriteRecipes();
     },
-    methods: {
-        canBeCooked () {
-          return true
-        },
+     computed: {
+    ...mapGetters(["getMyFavoriteRecipes"])     
+    },
+    methods: {       
     async showHideDetails(recipe) {
       if (this.showDetailsIDs.includes(recipe.id)){
         this.showDetailsIDs = []
@@ -58,13 +53,11 @@ export default {
       }
     },     
     async removeFromFavourite(recipe){
-      const headers = {Authorization: `Token ${this.token}`}
-      await axios.delete(
-      `http://127.0.0.1:8000/cook_recipes/my_favorite_recipes/${recipe.id}/`, {headers: headers}
-      )
-      this.listRecipes = await getMyFavouriteRecipes()
-    },
-    
+      if(confirm(`Are you sure you want to remove the recipe ${recipe.name} from your favorites?`)){
+        const recipe_id = recipe.id
+        await this.$store.dispatch('removeFavorite', recipe_id);        
+      }
+    },    
   },
 }
 </script>
@@ -118,10 +111,13 @@ img {
   text-align: left;
 }
 .thumbs-icon {
-  margin-left: 10px;
+  margin: 10px;
+  color: grey;
+
 }
 .eye-icon {
-  margin-left: 10px;
+  margin: 10px;
+  color: grey;
 }
 .xmark-icon {
     margin-left: 50px;

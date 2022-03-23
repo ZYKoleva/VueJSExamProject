@@ -1,9 +1,9 @@
 <template>
     <div class="recepies-wrapper">
-    <article class="recepies-wrapper" v-for="(recipe, index) in listRecipes" v-bind:key="index">
+    <article class="recepies-wrapper" v-for="(recipe, index) in getMyRecipes" v-bind:key="index">
       <div class="img-wrapper">
         <img
-          :class="[canBeCooked() ? 'cookable' : 'notCookable']"
+          class="cookable"
           :src="recipe.image"
           alt=""
         />
@@ -11,7 +11,9 @@
       <div class="btn-wrapper">
         <div class="thumbs-icon"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</div>
         <div class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</div>
-        <a class="xmark-icon" @click="deleteMyRecipe(recipe)">❌</a>
+        <a v-if="!getListFavoriteIds.includes(recipe.id)" href='' @click.prevent="favoredBtnClicked(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
+        <router-link :to="{ name: 'editMyRecipe', params: { recipeId: `${recipe.id}`}}">Edit Recipe</router-link>
+        <a @click="deleteMyRecipe(recipe)"><i class="fa fa-trash" aria-hidden="true"></i></a>
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
         {{ recipe.name }} {{recipe.id}}        
@@ -28,42 +30,41 @@
 </template>
 
 <script>
-import { getMyRecipes } from "../dataProviders/recipes.js";
-import axios from 'axios';
+import {mapGetters} from "vuex"
 export default {
   name: 'RecipesList',
   components: {
   },
   data() {
     return {
-        listRecipes: [],
         showDetailsIDs: [],
-        token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
       }
     },
     async created(){
-        this.listRecipes = await getMyRecipes();
     },
-    methods: {
-        canBeCooked () {
-          return true
-        },
-    async showHideDetails(recipe) {
-      if (this.showDetailsIDs.includes(recipe.id)){
-        this.showDetailsIDs = []
-      } else {
-        this.showDetailsIDs = []
-        this.showDetailsIDs.push(recipe.id)
-      }
-    },  
-    async deleteMyRecipe(recipe) {
-      const headers = {Authorization: `Token ${this.token}`}
-      await axios.delete(
-      `http://127.0.0.1:8000/cook_recipes/auth/${recipe.id}/`, {headers: headers}
-      )
-      this.listRecipes = await getMyRecipes()
-    }
-    
+    computed: {
+    ...mapGetters(["getMyRecipes", "getListFavoriteIds"])     
+    },
+    methods: {        
+      async showHideDetails(recipe) {
+        if (this.showDetailsIDs.includes(recipe.id)){
+          this.showDetailsIDs = []
+        } else {
+          this.showDetailsIDs = []
+          this.showDetailsIDs.push(recipe.id)
+        }
+      },  
+      async favoredBtnClicked(recipe){    
+        const recipe_id = recipe.id  
+        await this.$store.dispatch('recipeFavored', recipe_id)
+        await this.$store.dispatch('loadFavoriteIds')        
+      },    
+      async deleteMyRecipe(recipe) {
+        if(confirm(`Are you sure you want to delete the recipe ${recipe.name}?`)) {
+          const recipe_id = recipe.id;
+          await this.$store.dispatch('deleteRecipe', recipe_id)
+        }     
+      },  
   },
 }
 </script>

@@ -4,8 +4,8 @@ import Vuelidate from 'vuelidate';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import locale from 'element-ui/lib/locale/lang/en';
-import router from "./routers"
-
+import router from "./routers";
+import store from './store/store'
 
 Vue.config.productionTip = false
 Vue.use(Vuelidate);
@@ -14,5 +14,7 @@ Vue.use(ElementUI, {locale});
 
 new Vue({
   render: h => h(App),
-  router
+  store,
+  router,
+
 }).$mount('#app')

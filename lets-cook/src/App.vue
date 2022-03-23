@@ -1,95 +1,85 @@
 <template>
   <div id="app">
     <!-- <Header /> -->
-    <Header />
-    <Navigation/>
-    <router-view />
+    <Header 
+    :username="username"
+    :isAuth="isAuth"/>
+    <Navigation
+    :isAuth="isAuth"
+    @loggedOut="loggedOut"/>
+    <router-view
+     @LoggedIn="LoggedIn" 
+    @loggedOut="loggedOut"
+     :isAuth="isAuth"
+    />   
   </div>
 </template>
 
 <script>
-// import axios from 'axios'
 import Navigation from './components/Navigation.vue';
 import Header from "./components/Header.vue";
-
+import { getAllRecipes, getMyRecipes } from "./dataProviders/recipes.js"
+import { getMyFavouriteRecipes } from "./dataProviders/recipes.js"
+import { isAuthenticated, logOut } from "./dataProviders/authentication.js"
 
 export default {
   name: 'App',
   components: {
     Header,
-    Navigation,
-  
-  }, 
-  // data() {
-  //   return {
-  //     recipes: [],
-  //     myRecipes: [],
-  //     isAuthorized: false,
-  //     token: "",
-  //   }
+    Navigation,      
+  },
+  computed: {
+   },
 
-  // }, 
-  // mounted () {
-  //   this.getAllRecipes ()
-  //   this.getMyRecipes ()
-  // },
-  //  watch: {
-  //   token(newValue) {
-  //     if(this.isAuthorized) {
-  //       this.getMyRecipes (newValue);
-  //       console.log(newValue);
-  //     }
-  //   }
-  // },
-  // methods: {
-  //     getAllRecipes () {
-  //       axios({
-  //           method: 'get',
-  //           url: 'http://127.0.0.1:8000/cook_recipes/',
-  //           headers: {
-  //             "content-type": "application/json"
-  //             },
-  //         }).then ( response => this.recipes = response.data['recipes'])
-  //       },      
-  //     getMyRecipes () {
-  //       axios({
-  //         method: 'get',
-  //         url: 'http://127.0.0.1:8000/cook_recipes/auth/',
-  //         headers: {
-  //           Authorization: `Token ${this.token}`,
-  //           "content-type": "application/json"
-  //         },
-  //         }).then ( response => this.myRecipes = response.data['recipes'])
-  //       },
-  //     LoggedIn(token) {
-  //       this.isAuthorized = true;
-  //       this.token = token;
-  //       this.getMyRecipes(this.token);
-  //     },
-  //     Registered(token) {
-  //       this.token = token;
-  //       this.getMyRecipes (this.token);
-  //       this.isAuthorized = true;
-  //     },
-  //     SaveRecipeBtnClicked(newRecipe){
-  //       const formData = new FormData();
-  //       formData.append('image', newRecipe.image);
-  //       formData.append('description', newRecipe.description);
-  //       formData.append('name', newRecipe.name);
-  //       axios({
-  //         method: 'post',
-  //         url: 'http://127.0.0.1:8000/cook_recipes/auth/',
-  //         headers: {
-  //           Authorization: `Token ${this.token}`} ,
-  //         data: formData
-  //         }).then ( response => this.myRecipes = response.data['recipes'])
-  //         console.log(newRecipe)
-  //         this.getMyRecipes();
-  //     }
-       
-  // },
- 
+  data(){
+    return {
+      isAuth: isAuthenticated(),
+    }
+  },
+  async created(){
+    if(isAuthenticated()){
+      await this.$store.dispatch("loadAllRecipes")
+      await this.$store.dispatch("loadFavoriteRecipes")
+      await this.$store.dispatch('loadMyRecipes')
+      await this.$store.dispatch("loadFavoriteIds")
+    } else {
+      await this.$store.dispatch("loadAllRecipes")
+    }
+  },
+  methods: {
+    async getAuthData(){
+      this.myRecipes = await getMyRecipes();   
+      this.myFavourites = await getMyFavouriteRecipes();
+      this.allRecipes = await getAllRecipes()
+      this.username = JSON.parse(localStorage.getItem('username'))
+    },
+    LoggedIn(){
+      console.log("you logged in from App")
+      this.isAuth = isAuthenticated();
+      if(this.isAuth){
+        console.log(this.isAuth)
+        this.getAuthData()
+        console.log("got new data")
+      }      
+    },
+    async loggedOut(){    
+      await logOut()
+      this.myRecipes = []
+      this.myFavourites = []
+      this.username = ''  
+      localStorage.clear();
+      this.isAuth = isAuthenticated();
+      this.$router.push({ name: 'home' });
+    },
+    async addRecipe(){
+      console.log("caught addRecipe in App")
+      this.myRecipes = await getMyRecipes();
+      this.allRecipes = await getAllRecipes()
+      this.myFavourites = await getMyFavouriteRecipes()
+    },
+  }
 }
+  
 </script>
 
 <style>

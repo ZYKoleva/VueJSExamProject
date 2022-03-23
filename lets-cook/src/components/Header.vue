@@ -1,7 +1,8 @@
 <template>
   <div class="header">
     <header>
-      <h2>What shall I cook today ?!?</h2>
+      <h2>What shall we cook today<span v-if="isAuth">, {{username}}</span> ?!?</h2>
+
     </header>
 
   </div>
@@ -11,8 +12,10 @@
 export default {
   name: 'Recipes',
   props: {
-    msg: String
-  }
+    username: String,
+    isAuth: Boolean
+  },
+
 }
 </script>
 
