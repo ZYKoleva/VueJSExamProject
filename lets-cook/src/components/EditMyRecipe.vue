@@ -1,6 +1,6 @@
 <template>
   <div class="add-new-recipe-wrapper">
-    <form class="add-form" action="" method="post" @submit.prevent="SaveRecipeBtnClicked" enctype="multipart/form-data">
+    <form :populateWith="selected_recipe" class="add-form" action="" method="post" @submit.prevent="SaveRecipeBtnClicked" enctype="multipart/form-data">
       <div class="row">
         <div
           class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
@@ -11,7 +11,7 @@
               type="text" 
               id="name"
               class="form-control recipe-name"
-              v-model.lazy="recipeForm.name"
+              v-model.lazy="selected_recipe.name"
             />
      
           </div>
@@ -21,7 +21,7 @@
               type="text"
               id="description"
               class="form-control recipe-description"
-              v-model.lazy="recipeForm.description"
+              v-model.lazy="selected_recipe.description"
             />
          
           </div>
@@ -34,7 +34,6 @@
               type="file"
               id="image"
               @change="onFileUpload"
-              
             />
           </div>
       
@@ -50,39 +49,37 @@
   </div>
 </template>
 <script>
-import {addRecipe} from "../dataProviders/recipes.js";
+import {updateRecipe} from "../dataProviders/recipes.js";
 export default {
-  name: "AddRecipe",
+  name: "EditMyRecipe",
   props: {
+      selected_recipe: Object,
     },
   components: {
   },
   data() {
     return {
-      recipeForm: {
-        name: "",
-        image: "",        
-        description: "",
-      },
       token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
+      image_was_changed: false,
     };
   },
   methods: {
     onFileUpload(event) {
-        this.recipeForm.image = event.target.files[0]
+        this.selected_recipe.image = event.target.files[0];
+        this.image_was_changed = true;
       },
-      async SaveRecipeBtnClicked() {
+      SaveRecipeBtnClicked() {
         const formData = new FormData();
-        formData.append('image', this.recipeForm.image);
-        formData.append('description', this.recipeForm.description);
-        formData.append('name', this.recipeForm.name);
-        await addRecipe(formData)
-        this.$emit("addRecipe")
-        console.log("emitted addRecipe from component")
-        this.$router.push({name: "myRecipes"})
+        if (this.image_was_changed) {
+            formData.append('image', this.selected_recipe.image);
+        }        
+        formData.append('description', this.selected_recipe.description);
+        formData.append('name', this.selected_recipe.name);
+        updateRecipe(this.selected_recipe.id, formData)
+        this.$router.push({name: "myRecipes"});
       },
-    }  
-  };
+  },  
+};
 </script>
 <style scoped>
 

@@ -9,6 +9,7 @@
 </template>
 <script>
 import MyFavoriteRecipesList from "@/components/MyFavoriteRecipesList.vue"
+import { isAuthenticated } from "../dataProviders/authentication.js"
 
 export default {
     components: {
@@ -16,7 +17,7 @@ export default {
     },
     data() {
         return {
-            isLoggedIn: true,
+            isLoggedIn: isAuthenticated(),
         }
     },  
     methods: {

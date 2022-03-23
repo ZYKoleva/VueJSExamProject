@@ -8,21 +8,22 @@
 </template>
 <script>
 import MyRecipesList from "@/components/MyRecipesList.vue"
-
+import { isAuthenticated } from "../dataProviders/authentication.js"
 export default {
     components: {
         MyRecipesList,
     },
     data() {
         return {
-            isLoggedIn: true,
+            isLoggedIn: isAuthenticated(),
         }
     },
     methods: {
         goToLogin(){
             this.$router.push({name: "login"})
         }
-    },   
+    },
+       
 }
 </script>
 <style scoped>

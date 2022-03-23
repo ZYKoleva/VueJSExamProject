@@ -1,18 +1,23 @@
 <template>
     <div class="recepies-wrapper">
         <RecipesList
+        :isAuth="isAuth"
         />
     </div>
 </template>
 <script>
 import RecipesList from "@/components/RecipesList.vue"
-// import { getAllRecipes } from "../dataProviders/recipes.js"
+
 
 export default {
+    props: {
+        isAuth: Boolean,
+    },
     components: {
         RecipesList,
-    },   
-}
+    }, 
+}  
+
 </script>
 <style scoped>
 .recepies-wrapper {

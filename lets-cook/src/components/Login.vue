@@ -1,5 +1,6 @@
 <template>
     <form class="login-form-wrapper" action="" method="post" @submit.prevent="onLogin">
+      <p v-if="err">{{err}}</p>
   <div class="form-group">
     <label for="username">Username</label>
     <input v-model.lazy="loginData.username" type="username" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter Username">
@@ -14,6 +15,7 @@
 
 <script>
 import axios from 'axios'
+
 export default {
   name: "Login",
   props: {
@@ -28,24 +30,23 @@ export default {
               username: '',
               password: '',
           },
-          token: '',
+          err: '',
       }
   },
   methods: {
     async onLogin(){
-        // axios({
-        //   method: 'post',
-        //   url: 'http://127.0.0.1:8000/auth/login/',
-        //   content_type: "application/json",
-        //   data: this.loginData,
-        // }).then ( response => this.token = response.data['token'])
-        // this.$emit("LoggedIn", this.token)
         try {
           const response = await axios.post(
           'http://127.0.0.1:8000/auth/login/', this.loginData)
           this.token = response.data['token']
+          const expiration = response.data['expiry']      
+          localStorage.setItem("token", JSON.stringify(this.token))
+          localStorage.setItem("username", JSON.stringify(this.loginData.username))
+          localStorage.setItem('token_expiration', JSON.stringify(expiration))
+          this.$emit("LoggedIn")
           this.$router.push({name: "myRecipes"})
         } catch (err) {
+          this.err = err          
           console.error("An error occur during authentication", err);
           return [];
         }

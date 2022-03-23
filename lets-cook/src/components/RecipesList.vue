@@ -1,17 +1,18 @@
 <template>
-    <div class="recepies-wrapper">
-    <article class="recepies-wrapper" v-for="(recipe, index) in listRecipes" v-bind:key="index">
+    <div class="recepies-wrapper"
+    >
+    <article class="recepies-wrapper" v-for="(recipe, index) in getAllRecipes" v-bind:key="index">
       <div class="img-wrapper">
         <img
-          :class="[canBeCooked() ? 'cookable' : 'notCookable']"
+          class="cookable"
           :src="recipe.image"
           alt=""
         />
       </div>
       <div class="btn-wrapper">
-        <a class="heart-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
+        <a class="thumbs-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
         <a class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</a>
-        <a v-if="!listIDsFavouriteRecipes.includes(recipe.id)" href='' @click.prevent="markedAsFavourite(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
+        <a v-if="!getListFavoriteIds.includes(recipe.id)" href='' @click.prevent="favoredBtnClicked(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
         {{ recipe.name }} {{recipe.id}}        
@@ -28,68 +29,63 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { getAllRecipes, getMyFavouriteRecipesIds } from "../dataProviders/recipes.js"
+import {mapGetters} from "vuex"
+import { isAuthenticated } from "../dataProviders/authentication.js"
 export default {
   name: 'RecipesList',
-  // props: {
-  //   listRecipes: Array
-  // },  
+  props: {
+    isAuth: Boolean,
+  },
+  computed: {
+    ...mapGetters(["getAllRecipes", "getListFavoriteIds"])     
+  },
   components: {
   },
   data() {
     return {
-        listRecipes: [],
         showDetailsIDs: [],
-        token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
-        listIDsFavouriteRecipes: [],
       }
     },
-    async created(){
-        this.listRecipes = await getAllRecipes();
-        this.listIDsFavouriteRecipes = await getMyFavouriteRecipesIds();        
-
+    async created(){  
     },
-    methods: {
-        canBeCooked () {
-          return true
-        },
-    async showHideDetails(recipe) {
-      const formData = new FormData();
-      if (this.showDetailsIDs.includes(recipe.id)){
-        this.showDetailsIDs = []
-      } else {
-        this.showDetailsIDs = []
-        this.showDetailsIDs.push(recipe.id)
-        const new_num = recipe.viewed + 1;
-        formData.append('viewed', new_num)
-      }
-      await axios.put(
-      `http://127.0.0.1:8000/cook_recipes/${recipe.id}/`,
-      formData
-      )
-      const response = await axios.get("http://127.0.0.1:8000/cook_recipes/");
-      this.listRecipes = response.data['recipes'];
+    methods: {       
+      async showHideDetails(recipe) {
+        const formData = new FormData();
+        if (this.showDetailsIDs.includes(recipe.id)){
+          this.showDetailsIDs = []
+        } else {
+          this.showDetailsIDs = []
+          this.showDetailsIDs.push(recipe.id)
+          const new_num = recipe.viewed + 1;
+          formData.append('viewed', new_num)
+        }
+        const recipe_id = recipe.id
+        await this.$store.dispatch("recipeViewed", {recipe_id, formData})        
+        if(this.isAuth){
+          await this.$store.dispatch("loadFavoriteRecipes")
+          await this.$store.dispatch("loadMyRecipes")
+        }
     },  
-    async liked(recipe) {
-      const formData = new FormData();
-      const new_num = recipe.liked + 1;
-      formData.append('liked', new_num)
-      await axios.put(
-      `http://127.0.0.1:8000/cook_recipes/${recipe.id}/`,
-      formData
-      )
-      const response = await axios.get("http://127.0.0.1:8000/cook_recipes/");
-      this.listRecipes = response.data['recipes'];
+      async liked(recipe) {
+        const formData = new FormData();
+        const new_num = recipe.liked + 1;
+        formData.append('liked', new_num)
+        const recipe_id = recipe.id
+        await this.$store.dispatch("recipeLiked", {recipe_id, formData})
+        if(this.isAuth){
+          await this.$store.dispatch("loadFavoriteRecipes")
+          await this.$store.dispatch("loadMyRecipes")
+        }
     },
-    async markedAsFavourite(recipe){
-      const headers = {Authorization: `Token ${this.token}`}
-      await axios.post(
-      `http://127.0.0.1:8000/cook_recipes/my_favorite_recipes/${recipe.id}/`,
-      {}, {headers: headers}
-      )
-      this.listIDsFavouriteRecipes.push(recipe.id)
-    },
+      async favoredBtnClicked(recipe){      
+        if(isAuthenticated()) {
+          const recipe_id = recipe.id  
+          await this.$store.dispatch('recipeFavored', recipe_id)
+          await this.$store.dispatch('loadFavoriteIds')
+        } else {
+          alert("You need to be logged in in order to add recipe to your favourites!")
+        }
+      },
     
   },
 }
