@@ -2,15 +2,13 @@
   <div id="app">
     <!-- <Header /> -->
     <Header 
-    :username="username"
-    :isAuth="isAuth"/>
+    :username="getCurrentUser['username']"
+    :isAuth="getCurrentUser['isAuth']"/>
     <Navigation
-    :isAuth="isAuth"
-    @loggedOut="loggedOut"/>
+    :isAuth="getCurrentUser['isAuth']"
+    />
     <router-view
-     @LoggedIn="LoggedIn" 
-    @loggedOut="loggedOut"
-     :isAuth="isAuth"
+     :isAuth="getCurrentUser['isAuth']"
     />   
   </div>
 </template>
@@ -18,9 +16,8 @@
 <script>
 import Navigation from './components/Navigation.vue';
 import Header from "./components/Header.vue";
-import { getAllRecipes, getMyRecipes } from "./dataProviders/recipes.js"
-import { getMyFavouriteRecipes } from "./dataProviders/recipes.js"
-import { isAuthenticated, logOut } from "./dataProviders/authentication.js"
+import { isAuthenticated } from "./dataProviders/authentication.js"
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'App',
@@ -29,55 +26,27 @@ export default {
     Navigation,      
   },
   computed: {
+    ...mapGetters(["getCurrentUser"])    
    },
 
-  data(){
-    return {
-      isAuth: isAuthenticated(),
-    }
-  },
+  // data(){
+  //   return {
+  //     isAuth: isAuthenticated(),
+  //   }
+  // },
   async created(){
     if(isAuthenticated()){
       await this.$store.dispatch("loadAllRecipes")
       await this.$store.dispatch("loadFavoriteRecipes")
       await this.$store.dispatch('loadMyRecipes')
       await this.$store.dispatch("loadFavoriteIds")
+      const username = localStorage.getItem('username')
+      await this.$store.commit('currentUserData', {username: username, isAuth: true})
     } else {
       await this.$store.dispatch("loadAllRecipes")
     }
-  },
-  methods: {
-    async getAuthData(){
-      this.myRecipes = await getMyRecipes();   
-      this.myFavourites = await getMyFavouriteRecipes();
-      this.allRecipes = await getAllRecipes()
-      this.username = JSON.parse(localStorage.getItem('username'))
-    },
-    LoggedIn(){
-      console.log("you logged in from App")
-      this.isAuth = isAuthenticated();
-      if(this.isAuth){
-        console.log(this.isAuth)
-        this.getAuthData()
-        console.log("got new data")
-      }      
-    },
-    async loggedOut(){    
-      await logOut()
-      this.myRecipes = []
-      this.myFavourites = []
-      this.username = ''  
-      localStorage.clear();
-      this.isAuth = isAuthenticated();
-      this.$router.push({ name: 'home' });
-    },
-    async addRecipe(){
-      console.log("caught addRecipe in App")
-      this.myRecipes = await getMyRecipes();
-      this.allRecipes = await getAllRecipes()
-      this.myFavourites = await getMyFavouriteRecipes()
-    },
   }
+ 
 }
   
 </script>

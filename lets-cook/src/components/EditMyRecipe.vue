@@ -59,7 +59,6 @@ export default {
   },
   data() {
     return {
-      token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
       image_was_changed: false,
     };
   },
@@ -68,14 +67,17 @@ export default {
         this.selected_recipe.image = event.target.files[0];
         this.image_was_changed = true;
       },
-      SaveRecipeBtnClicked() {
+      async SaveRecipeBtnClicked() {
         const formData = new FormData();
         if (this.image_was_changed) {
             formData.append('image', this.selected_recipe.image);
         }        
         formData.append('description', this.selected_recipe.description);
         formData.append('name', this.selected_recipe.name);
-        updateRecipe(this.selected_recipe.id, formData)
+        await updateRecipe(this.selected_recipe.id, formData)
+        await this.$store.dispatch("loadAllRecipes")
+        await this.$store.dispatch("loadFavoriteRecipes")
+        await this.$store.dispatch("loadMyRecipes")
         this.$router.push({name: "myRecipes"});
       },
   },  

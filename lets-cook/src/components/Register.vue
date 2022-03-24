@@ -1,8 +1,7 @@
 <template>
-    <form class="login-form-wrapper" action="" method="post" @submit.prevent="onRegister">
+    <form class="login-form-wrapper" action="" method="post" @submit.prevent="registerBtnClicked">
   <div class="form-group">
     <label for="username">Username</label>
-    <!-- <input v-model.lazy.trim="registerData.username" type="username" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter Username"> -->
     <input v-model.lazy.trim="$v.registerData.username.$model" type="username" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter Username">
   </div>
   <div class="error" v-if="!$v.registerData.username.required">Username is required field</div>
@@ -31,8 +30,8 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { required, minLength, email, sameAs} from 'vuelidate/lib/validators'
+import { register } from '../dataProviders/authentication'
 export default {
   name: "Register",
   props: {
@@ -49,7 +48,6 @@ export default {
         },
         password2: '',
         error: '',
-        token: ''
     }
   },
     validations: {
@@ -58,7 +56,7 @@ export default {
             email: {required, email},
             password: {required, minLength: minLength(4)},
         },
-        password2: {required, sameAsPassword: sameAs(function() { return this.registerData.password })}
+        password2: {required, sameAsPassword: sameAs(function() { return this.registerData.password })},
     },
     computed: {
         isSubmitBtnDisabled(){
@@ -66,24 +64,17 @@ export default {
         }
     },
   methods: {
-    async onRegister(){
-      try {
-        const response = await axios.post(
-          'http://127.0.0.1:8000/auth/register/', this.registerData)
-        this.token = response.data['token']
-        this.$router.push({name: "myRecipes"})
-      } catch (err) {
-        console.error("An error occur during registration", err);
-          return [];
-      }
-
-        // axios({
-        //   method: 'post',
-        //   url: 'http://127.0.0.1:8000/auth/register/',
-        //   content_type: "application/json",
-        //   data: this.registerData,
-        // }).then ( response => this.token = response.data['token'])
-        // this.$emit("Registered", this.token)
+    async registerBtnClicked(){
+      this.$store.commit('clearCurrentUserData');
+      this.$store.commit('clearStoreData');
+      const registerData = this.registerData;
+      await register(registerData);
+      this.$store.commit('currentUserData', {username: `${registerData['username']}`, isAuth: true});
+      this.$store.dispatch("loadAllRecipes");
+      this.$store.dispatch("loadFavoriteRecipes");
+      this.$store.dispatch("loadMyRecipes");
+      this.$store.dispatch('loadFavoriteIds');
+      this.$router.push({name: "allRecipes"});
       },
     },
 };
