@@ -64,7 +64,6 @@ export default {
         image: "",        
         description: "",
       },
-      token: '80c96815868f2aa232914fa24eefb49217eedec1e126a203256e7d7b7bf53c77',
     };
   },
   methods: {
@@ -77,8 +76,9 @@ export default {
         formData.append('description', this.recipeForm.description);
         formData.append('name', this.recipeForm.name);
         await addRecipe(formData)
-        this.$emit("addRecipe")
-        console.log("emitted addRecipe from component")
+        await this.$store.dispatch('loadAllRecipes')
+        await this.$store.dispatch('loadMyRecipes')
+        console.log("Add recipe btn clicked from component")
         this.$router.push({name: "myRecipes"})
       },
     }  

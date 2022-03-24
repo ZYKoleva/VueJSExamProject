@@ -2,7 +2,7 @@
     <div >
         <div v-if="!registerLinkClicked">
         <Login 
-        @LoggedIn="LoggedIn"/>
+        />
         <p class="register-link">Click <a href='' @click.prevent="register">here</a> if you do not have registration yet.</p>
         </div>
         <Register v-if="registerLinkClicked"/>
@@ -29,9 +29,6 @@ export default {
             this.registerLinkClicked = true;
             
         },
-        LoggedIn(){
-            this.$emit("LoggedIn")
-        }
     }
 }
 </script>

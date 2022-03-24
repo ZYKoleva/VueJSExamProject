@@ -1,5 +1,38 @@
 import axios from 'axios'
 
+export async function logIn(loginData) {
+    try {
+        const response = await axios.post(
+        'http://127.0.0.1:8000/auth/login/', loginData)
+        const token = response.data['token']
+        const expiration = response.data['expiry']      
+        localStorage.setItem("token", JSON.stringify(token))
+        localStorage.setItem("username", loginData['username'])
+        localStorage.setItem('token_expiration', JSON.stringify(expiration))
+    } catch (err) {
+        this.err = err          
+        console.error("An error occur during authentication", err);
+        return [];
+    }
+}
+
+export async function register(registerData){
+    try {
+        await axios.post(
+            'http://127.0.0.1:8000/auth/register/', registerData);
+        const loginData = {
+            username: registerData['username'],
+            password: registerData['password']
+            }
+        await logIn(loginData);
+          
+    } catch (err) {
+        this.err = err          
+        console.error("An error occur during authentication", err);
+        return [];
+    }
+}
+
 export function isAuthenticated() {
     const token_expiration = JSON.parse(localStorage.getItem('token_expiration'))
     if (token_expiration) {
@@ -24,7 +57,6 @@ export function getToken(){
         return JSON.parse(current_token)
     }
 }
-
 
 export async function logOut(){
     const token = getToken()

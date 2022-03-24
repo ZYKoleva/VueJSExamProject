@@ -10,13 +10,14 @@
     <el-menu-item index="4"><router-link :to="{ name: 'myFavRecipes' }">My Favorite Recipes <span v-if="isAuth">({{getMyFavoriteRecipes.length}})</span></router-link></el-menu-item>
     <el-menu-item index="5"><router-link :to="{ name: 'addRecipe' }">Add Recipe</router-link></el-menu-item>
     <el-menu-item v-if="!isAuth" index="6"><router-link :to="{ name: 'login' }">Login/Register</router-link></el-menu-item>
-    <el-menu-item v-else index="7" @click="loggedOut">Logout</el-menu-item>
+    <el-menu-item v-else index="7" @click="logOutBtnClicked">Logout</el-menu-item>
   </el-menu>
   
   </div>
 </template>
 <script>
 import {mapGetters} from "vuex"
+import { logOut } from "../dataProviders/authentication"
 
 export default {
   name: 'Navigation',
@@ -33,8 +34,13 @@ export default {
   async created(){
   },
   methods: {
-    loggedOut(){      
-      this.$emit("loggedOut")
+    async logOutBtnClicked () {         
+      await logOut();
+      this.$store.commit('clearCurrentUserData');
+      this.$store.commit('clearStoreData');
+      console.log(this.$store.getters.getCurrentUser)
+      localStorage.clear();
+      this.$router.push({ name: 'home' });
     },
   }
 };

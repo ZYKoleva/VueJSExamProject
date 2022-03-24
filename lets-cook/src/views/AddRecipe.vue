@@ -1,7 +1,7 @@
 <template>
 <div>
     <AddRecipe v-if="isLoggedIn"
-    @addRecipe="addRecipe"/>  
+    />  
     <div class="add-recipe-wrapper" v-else>
         <p>You need to be logged in in order to add a recipe. Click <router-link :to="{ name: 'login'}">here</router-link> to be redirected to login page</p>
     </div>
@@ -25,10 +25,6 @@ export default {
         goToLogin(){
             this.$router.push({name: "login"})
         },
-        addRecipe(){
-            this.$emit("addRecipe")
-            console.log("emitted addRecipe from view")
-        }
     },        
 }
 

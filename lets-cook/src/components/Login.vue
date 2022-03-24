@@ -1,5 +1,5 @@
 <template>
-    <form class="login-form-wrapper" action="" method="post" @submit.prevent="onLogin">
+    <form class="login-form-wrapper" action="" method="post" @submit.prevent="loginBtnClicked">
       <p v-if="err">{{err}}</p>
   <div class="form-group">
     <label for="username">Username</label>
@@ -14,7 +14,8 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import {logIn} from '../dataProviders/authentication'
 
 export default {
   name: "Login",
@@ -34,16 +35,17 @@ export default {
       }
   },
   methods: {
-    async onLogin(){
+    async loginBtnClicked(){
+      const loginData = this.loginData
+      this.$store.commit('clearCurrentUserData');
+      this.$store.commit('clearStoreData');
         try {
-          const response = await axios.post(
-          'http://127.0.0.1:8000/auth/login/', this.loginData)
-          this.token = response.data['token']
-          const expiration = response.data['expiry']      
-          localStorage.setItem("token", JSON.stringify(this.token))
-          localStorage.setItem("username", JSON.stringify(this.loginData.username))
-          localStorage.setItem('token_expiration', JSON.stringify(expiration))
-          this.$emit("LoggedIn")
+          await logIn(loginData)     
+          this.$store.commit('currentUserData', {username: `${loginData.username}`, isAuth: true})
+          await this.$store.dispatch("loadAllRecipes")
+          await this.$store.dispatch("loadFavoriteRecipes")
+          await this.$store.dispatch("loadMyRecipes")
+          await this.$store.dispatch('loadFavoriteIds')
           this.$router.push({name: "myRecipes"})
         } catch (err) {
           this.err = err          

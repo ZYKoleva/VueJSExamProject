@@ -15,7 +15,6 @@ export default {
     username: String,
     isAuth: Boolean
   },
-
 }
 </script>
 

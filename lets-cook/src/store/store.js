@@ -19,6 +19,10 @@ export default new Vuex.Store({
     myRecipes: [],
     myFavoriteRecipes: [],
     listFavoriteIds: [],
+    currentUser: {
+      username: '',
+      isAuth: false
+    }
   },
   getters: {
     getLoadingState(state){
@@ -35,6 +39,9 @@ export default new Vuex.Store({
     },
     getListFavoriteIds(state){
       return state.listFavoriteIds
+    },
+    getCurrentUser(state){
+      return state.currentUser;
     }
   },
   mutations: {
@@ -53,6 +60,23 @@ export default new Vuex.Store({
     },
     myFavoriteIds(state, list_favorite_ids){
       state.listFavoriteIds = list_favorite_ids
+    },
+    currentUserData(state, user) {
+      state.currentUser = user
+    },
+    clearCurrentUserData(state){
+      const empty_user = {
+        username: '',
+        isAuth: false
+      }
+      state.currentUser = empty_user;
+    },
+    clearStoreData(state) {
+      state.isLoading = false;
+      state.allRecipes = [];
+      state.myRecipes = [];
+      state.myFavoriteRecipes = [];
+      state.listFavoriteIds = [];
     }
   },
   actions: {
