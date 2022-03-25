@@ -3,9 +3,10 @@
         <div v-if="!registerLinkClicked">
         <Login 
         />
-        <p class="register-link">Click <a href='' @click.prevent="register">here</a> if you do not have registration yet.</p>
+        <p class="click-here">Click <a href='' @click.prevent="register">here</a> if you do not have registration yet.</p>
         </div>
         <Register v-if="registerLinkClicked"/>
+        <p v-if="registerLinkClicked" class="click-here">Click <a href='' @click.prevent="login">here</a> if you already have registration and want to log in.</p>
     </div>
 </template>
 
@@ -29,11 +30,14 @@ export default {
             this.registerLinkClicked = true;
             
         },
+        login(){
+            this.registerLinkClicked = false;
+        }
     }
 }
 </script>
 <style scoped>
-.register-link {
+.click-here {
     margin: 50px;
 }
 </style>

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import login
-from django.contrib.auth import logout
+from django.contrib.auth.models import User
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -33,3 +33,8 @@ class LoginApi(KnowLoginView):
         login(request, user)
         return super(LoginApi, self).post(request, format=None)
 
+
+class ListUsers(generics.GenericAPIView):
+    def get(self, request, format=None):
+        usernames = [user.username for user in User.objects.all()]
+        return Response({'usernames': usernames})

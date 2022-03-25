@@ -1,6 +1,6 @@
 <template>
     <form class="login-form-wrapper" action="" method="post" @submit.prevent="loginBtnClicked">
-      <p v-if="err">{{err}}</p>
+      <p class="error" v-if="err">{{err}}</p>
   <div class="form-group">
     <label for="username">Username</label>
     <input v-model.lazy="loginData.username" type="username" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter Username">
@@ -14,7 +14,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
 import {logIn} from '../dataProviders/authentication'
 
 export default {
@@ -48,9 +47,7 @@ export default {
           await this.$store.dispatch('loadFavoriteIds')
           this.$router.push({name: "myRecipes"})
         } catch (err) {
-          this.err = err          
-          console.error("An error occur during authentication", err);
-          return [];
+          this.err = "An error occur during authentication. Please check if username and password are typed correctly."                
         }
       },
     },
@@ -61,5 +58,8 @@ export default {
 .login-form-wrapper {
     width: 300px;
     margin: 50px;
+}
+.error {
+    color: crimson;
 }
 </style>

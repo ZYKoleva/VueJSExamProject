@@ -8,7 +8,7 @@ Unauthenticated users can view, filter recipes by category and like different re
 Authenticated users can like recipes, add recipes, can modify their own recipes and mark recipes as favorite, including their own.
 
 ### Implementation
-Solution consists of Vue app as front-end and Django app back-end.
+Solution consists of Vue app in javascript as front-end and Django app back-end in python.
 
 ### Structure
 

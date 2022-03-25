@@ -29,10 +29,11 @@
             <label for="image">
               <span class="span-picture">Picture</span>
 
-              </label>
+            </label>
             <input
               type="file"
               id="image"
+              required
               @change="onFileUpload"
               
             />

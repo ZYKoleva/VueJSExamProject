@@ -9,8 +9,7 @@ export async function logIn(loginData) {
         localStorage.setItem("token", JSON.stringify(token))
         localStorage.setItem("username", loginData['username'])
         localStorage.setItem('token_expiration', JSON.stringify(expiration))
-    } catch (err) {
-        this.err = err          
+    } catch (err) {     
         console.error("An error occur during authentication", err);
         return [];
     }
@@ -26,9 +25,18 @@ export async function register(registerData){
             }
         await logIn(loginData);
           
-    } catch (err) {
-        this.err = err          
+    } catch (err) {         
         console.error("An error occur during authentication", err);
+        return [];
+    }
+}
+
+export async function getAllUsernames(){
+    try {
+        const username_list = await axios.get('http://127.0.0.1:8000/auth/users/');
+        return username_list.data['usernames'];
+    } catch(err) {
+        console.log(err)
         return [];
     }
 }
