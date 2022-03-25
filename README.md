@@ -8,7 +8,7 @@ Unauthenticated users can view, filter recipes by category and like different re
 Authenticated users can like recipes, add recipes, can modify their own recipes and mark recipes as favorite, including their own.
 
 ### Implementation
-Solution consists of VueJs front-end and Django REST framework  and Postgresql as back-end
+Solution consists of Vue app as front-end and Django app back-end.
 
 ### Structure
 
@@ -21,10 +21,10 @@ Solution consists of VueJs front-end and Django REST framework  and Postgresql a
         ├── media           # Storing uploaded images
         └── mycookbook
            └── mycookbook  
-                └── models  
+                └── models  #Recipe, MyRecipe(FK User, FK Recipe), MyFavoriteRecipes (FK User, FK Recipe)
                 └── serializers 
                 └── urls 
-                └── views               
+                └── views   #django-rest-framework with knox TokenAuthentication            
     ├── manage.py            
     ├── requirements 
 
@@ -66,6 +66,20 @@ Solution consists of VueJs front-end and Django REST framework  and Postgresql a
 ```
 ### Useful commands
 
-Backend:
+git clone https://github.com/ZYKoleva/VueJSExamProject.git
 
-Fronend:
+Backend (backend_django dir):    
+
+```
+python -m venv .env
+.\.env\Scripts\Activate.ps1
+pip install -r requirements.txt  #if installation fails, upgrade pip (python -m pip install --upgrade pip)
+cd cookbook
+python manage.py runserver
+```
+
+Fronend (lets-cook dir):
+```
+npm install
+npm run serve
+```
