@@ -37,7 +37,8 @@
               
             />
           </div>
-      
+              <RecipesCategory
+              @categorySelected="categorySelected"/>
         </div>
       </div>
       <div class="button-wrapper">
@@ -51,11 +52,13 @@
 </template>
 <script>
 import {addRecipe} from "../dataProviders/recipes.js";
+import RecipesCategory from "./RecipeCategories.vue";
 export default {
   name: "AddRecipe",
   props: {
     },
   components: {
+    RecipesCategory,
   },
   data() {
     return {
@@ -63,6 +66,7 @@ export default {
         name: "",
         image: "",        
         description: "",
+        category: "",
       },
     };
   },
@@ -70,11 +74,15 @@ export default {
     onFileUpload(event) {
         this.recipeForm.image = event.target.files[0]
       },
+      categorySelected(selected) {
+        this.recipeForm.category = selected
+      },
       async SaveRecipeBtnClicked() {
         const formData = new FormData();
         formData.append('image', this.recipeForm.image);
         formData.append('description', this.recipeForm.description);
         formData.append('name', this.recipeForm.name);
+        formData.append('category', this.recipeForm.category);
         await addRecipe(formData)
         await this.$store.dispatch('loadAllRecipes')
         await this.$store.dispatch('loadMyRecipes')

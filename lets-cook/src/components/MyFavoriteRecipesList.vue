@@ -1,6 +1,9 @@
 <template>
+<div>
+      <RecipesCategory
+    @categorySelected="categorySelected"/>
     <div class="recipes-main-wrapper">
-    <article class="recepies-wrapper" v-for="(recipe, index) in getMyFavoriteRecipes" v-bind:key="index">
+    <article class="recepies-wrapper" v-for="(recipe, index) in filterList(getMyFavoriteRecipes, category)" v-bind:key="index">
       <div class="img-wrapper">
         <img
           class="cookable"
@@ -29,17 +32,21 @@
       </div>
     </article> 
   </div> 
+</div>
 </template>
 
 <script>
 import {mapGetters} from "vuex"
+import RecipesCategory from './RecipeCategories.vue'
 export default {
   name: 'MyFavoriteRecipesList',
   components: {
+     RecipesCategory,
   },
   data() {
     return {
         showDetailsIDs: [],
+        category: ''
       }
     },
     async created(){
@@ -47,21 +54,32 @@ export default {
      computed: {
     ...mapGetters(["getMyFavoriteRecipes"])     
     },
-    methods: {       
-    async showHideDetails(recipe) {
-      if (this.showDetailsIDs.includes(recipe.id)){
-        this.showDetailsIDs = []
-      } else {
-        this.showDetailsIDs = []
-        this.showDetailsIDs.push(recipe.id)
-      }
-    },     
-    async removeFromFavourite(recipe){
-      if(confirm(`Are you sure you want to remove the recipe ${recipe.name} from your favorites?`)){
-        const recipe_id = recipe.id
-        await this.$store.dispatch('removeFavorite', recipe_id);        
-      }
-    },    
+    methods: {  
+      categorySelected(selected) {
+        this.category = selected
+      } ,  
+      filterList(items, category){
+        if(this.category === "") {
+          return items;
+        } else {
+          const filteredItems = items.filter(item => { return item.category === category});
+          return filteredItems
+        }
+      },             
+      async showHideDetails(recipe) {
+        if (this.showDetailsIDs.includes(recipe.id)){
+          this.showDetailsIDs = []
+        } else {
+          this.showDetailsIDs = []
+          this.showDetailsIDs.push(recipe.id)
+        }
+      },     
+      async removeFromFavourite(recipe){
+        if(confirm(`Are you sure you want to remove the recipe ${recipe.name} from your favorites?`)){
+          const recipe_id = recipe.id
+          await this.$store.dispatch('removeFavorite', recipe_id);        
+        }
+      },    
   },
 }
 </script>

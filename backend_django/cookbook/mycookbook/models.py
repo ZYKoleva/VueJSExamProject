@@ -3,11 +3,22 @@ from django.contrib.auth.models import User
 
 
 class Recipe(models.Model):
+    STARTERS = 'Starters',
+    MAIN_COURSES = 'Main Courses'
+    DESERTS = 'Deserts'
+    CATEGORY_CHOICES = [
+        ('', ''),
+        (STARTERS, 'Starters'),
+        (MAIN_COURSES, 'Main Courses'),
+        (DESERTS, 'Deserts')
+    ]
     name = models.CharField(max_length=100, default="Name")
     image = models.ImageField(upload_to='images')
     description = models.TextField(max_length=1000, blank=True)
     viewed = models.IntegerField(default=0)
     liked = models.IntegerField(default=0)
+    category = models.CharField(max_length=100, blank=True)
+
 
 
 class MyRecipe(models.Model):

@@ -1,6 +1,10 @@
 <template>
+<div>
+      <RecipesCategory
+    @categorySelected="categorySelected"/>
+
     <div class="recipes-main-wrapper">
-    <article class="recepies-wrapper" v-for="(recipe, index) in getMyRecipes" v-bind:key="index">
+    <article class="recepies-wrapper" v-for="(recipe, index) in filterList(getMyRecipes,category)" v-bind:key="index">
       <div class="img-wrapper">
         <img
           class="cookable"
@@ -33,17 +37,21 @@
       </div>
     </article> 
   </div> 
+  </div>
 </template>
 
 <script>
 import {mapGetters} from "vuex"
+import RecipesCategory from './RecipeCategories.vue'
 export default {
   name: 'RecipesList',
   components: {
+     RecipesCategory,
   },
   data() {
     return {
         showDetailsIDs: [],
+        category: ''
       }
     },
     async created(){
@@ -51,7 +59,18 @@ export default {
     computed: {
     ...mapGetters(["getMyRecipes", "getListFavoriteIds"])     
     },
-    methods: {        
+    methods: {   
+      categorySelected(selected) {
+        this.category = selected
+      } ,  
+      filterList(items, category){
+        if(this.category === "") {
+          return items;
+        } else {
+          const filteredItems = items.filter(item => { return item.category === category});
+          return filteredItems
+        }
+      },        
       async showHideDetails(recipe) {
         if (this.showDetailsIDs.includes(recipe.id)){
           this.showDetailsIDs = []
