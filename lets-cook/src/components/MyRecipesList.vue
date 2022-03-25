@@ -1,6 +1,10 @@
 <template>
-    <div class="recepies-wrapper">
-    <article class="recepies-wrapper" v-for="(recipe, index) in getMyRecipes" v-bind:key="index">
+<div>
+      <RecipesCategory
+    @categorySelected="categorySelected"/>
+
+    <div class="recipes-main-wrapper">
+    <article class="recepies-wrapper" v-for="(recipe, index) in filterList(getMyRecipes,category)" v-bind:key="index">
       <div class="img-wrapper">
         <img
           class="cookable"
@@ -9,11 +13,17 @@
         />
       </div>
       <div class="btn-wrapper">
-        <div class="thumbs-icon"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</div>
-        <div class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</div>
-        <a v-if="!getListFavoriteIds.includes(recipe.id)" href='' @click.prevent="favoredBtnClicked(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
-        <router-link :to="{ name: 'editMyRecipe', params: { recipeId: `${recipe.id}`}}">Edit Recipe</router-link>
-        <a @click="deleteMyRecipe(recipe)"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        <div class="edit-delete-btn-wrapper">
+           <a class="heart-icon" v-if="!getListFavoriteIds.includes(recipe.id)" href='' @click.prevent="favoredBtnClicked(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
+          <router-link :to="{ name: 'editMyRecipe', params: { recipeId: `${recipe.id}`}}"><i class="fa fa-pencil-square-o" title="Edit"></i></router-link>
+          <a href='' @click="deleteMyRecipe(recipe)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+        </div>
+        <div class="viewed-seen-wrapper">
+          <a class="thumbs-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
+         
+            <div><span class="viewed">Viewed: {{recipe.viewed}}</span></div>  
+        </div>    
+       
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
         {{ recipe.name }} {{recipe.id}}        
@@ -27,17 +37,21 @@
       </div>
     </article> 
   </div> 
+  </div>
 </template>
 
 <script>
 import {mapGetters} from "vuex"
+import RecipesCategory from './RecipeCategories.vue'
 export default {
   name: 'RecipesList',
   components: {
+     RecipesCategory,
   },
   data() {
     return {
         showDetailsIDs: [],
+        category: ''
       }
     },
     async created(){
@@ -45,7 +59,18 @@ export default {
     computed: {
     ...mapGetters(["getMyRecipes", "getListFavoriteIds"])     
     },
-    methods: {        
+    methods: {   
+      categorySelected(selected) {
+        this.category = selected
+      } ,  
+      filterList(items, category){
+        if(this.category === "") {
+          return items;
+        } else {
+          const filteredItems = items.filter(item => { return item.category === category});
+          return filteredItems
+        }
+      },        
       async showHideDetails(recipe) {
         if (this.showDetailsIDs.includes(recipe.id)){
           this.showDetailsIDs = []
@@ -80,13 +105,17 @@ export default {
   align-items: flex-start;
 }
 
+.recipes-main-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
 
 .recepies-wrapper {
   margin-top: 50px;
   margin-left: 50px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+
 }
 
 
@@ -96,7 +125,8 @@ article {
 }
 .recipe-title {
   text-align: center;
-  margin: 40px;
+  margin: 20px;
+  display: block;
   font-family: "Kalam", sans-serif;
   font-size: large;
 }
@@ -110,12 +140,29 @@ img {
   height: 100%;
 }
 .btn-wrapper {
-  margin-top: 10px;
   margin-bottom: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   text-align: left;
+}
+.edit-delete-btn-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 1.2rem;
+
+}
+.viewed-seen-wrapper{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.viewed {
+  margin: 5px;
+  font-size: 0.8rem;
+  color:darkgray;
+
 }
 .thumbs-icon {
   margin: 10px;
@@ -128,7 +175,15 @@ img {
 }
 .heart-icon {
   margin: 10px;
-  color: grey;
+  color:darkred;
+}
+.fa-pencil-square-o {
+  color: green;
+  margin: 10px;
+}
+.fa-trash {
+  margin: 10px;
+  color: red;
 }
 
 ul {

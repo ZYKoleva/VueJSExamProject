@@ -36,6 +36,8 @@
               @change="onFileUpload"
             />
           </div>
+          <RecipesCategory          
+          @categorySelected="categorySelected"/>
       
         </div>
       </div>
@@ -50,16 +52,20 @@
 </template>
 <script>
 import {updateRecipe} from "../dataProviders/recipes.js";
+import RecipesCategory from "./RecipeCategories.vue";
 export default {
   name: "EditMyRecipe",
   props: {
       selected_recipe: Object,
+      
     },
   components: {
+    RecipesCategory,
   },
   data() {
     return {
       image_was_changed: false,
+      category_changed: ''
     };
   },
   methods: {
@@ -67,10 +73,16 @@ export default {
         this.selected_recipe.image = event.target.files[0];
         this.image_was_changed = true;
       },
+      categorySelected(selected) {
+        this.category_changed = selected
+      },
       async SaveRecipeBtnClicked() {
         const formData = new FormData();
         if (this.image_was_changed) {
-            formData.append('image', this.selected_recipe.image);
+          formData.append('image', this.selected_recipe.image);
+        }
+        if (this.category_changed) {
+          formData.append('category', this.category_changed);
         }        
         formData.append('description', this.selected_recipe.description);
         formData.append('name', this.selected_recipe.name);

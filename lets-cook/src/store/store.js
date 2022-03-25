@@ -48,9 +48,11 @@ export default new Vuex.Store({
     setLoadingState(state, payload){
       state.isLoading = payload;
     },
+    setCurrentLocation(state){
+      state.currentLocation = window.location.href;
+    },
     allRecipes (state, payload) {      
       state.allRecipes = payload;
-      console.log("state was updated")
     },
     myFavoriteRecipes(state, payload) {
       state.myFavoriteRecipes = payload;
@@ -103,7 +105,6 @@ export default new Vuex.Store({
       const list_favored_recipes = await getMyFavouriteRecipes();
       let list_favorite_ids = [];
       list_favored_recipes.forEach( rec => list_favorite_ids.push(rec["id"]));
-      console.log(list_favorite_ids)
       context.commit('myFavoriteIds', list_favorite_ids)
     },
     async recipeViewed(context, payload){
@@ -146,7 +147,6 @@ export default new Vuex.Store({
       context.commit('setLoadingState', false);
       const list_favorite_ids = [];
       list_favorite_recipes.forEach( rec => list_favorite_ids.push(rec["id"]));
-      console.log(list_favorite_ids)
       context.commit('myFavoriteIds', list_favorite_ids)
     }    
   }

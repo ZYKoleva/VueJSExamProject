@@ -1,7 +1,10 @@
 <template>
-    <div class="recepies-wrapper"
+  <div>
+    <RecipesCategory
+    @categorySelected="categorySelected"/>
+    <div class="recipes-main-wrapper"    
     >
-    <article class="recepies-wrapper" v-for="(recipe, index) in getAllRecipes" v-bind:key="index">
+    <article class="recepies-wrapper" v-for="(recipe, index) in filterList(getAllRecipes, category)" v-bind:key="index">
       <div class="img-wrapper">
         <img
           class="cookable"
@@ -10,14 +13,19 @@
         />
       </div>
       <div class="btn-wrapper">
-        <a class="thumbs-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
-        <a class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</a>
-        <a v-if="!getListFavoriteIds.includes(recipe.id)" href='' @click.prevent="favoredBtnClicked(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
+        <div class="thimb-heart-wrapper">
+          <a class="thumbs-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
+          <a class="heart-icon" v-if="!getListFavoriteIds.includes(recipe.id)" href='' @click.prevent="favoredBtnClicked(recipe)"><i class="fa fa-heart fa-sm" aria-hidden="true"></i></a>
+        </div>
+        <div class="viewed-wrapper">
+          <!-- <a class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</a> -->
+          <span class="viewed">Viewed: {{recipe.viewed}}</span>          
+        </div>     
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
-        {{ recipe.name }} {{recipe.id}}        
+        <h5>{{ recipe.name }}</h5>      
       </div>
-           
+                
       <div>
         <div v-if="showDetailsIDs.includes(recipe.id)" class="description-wrapper">
           <h5>Preparation</h5>
@@ -26,11 +34,13 @@
       </div>
     </article> 
   </div> 
+  </div>
 </template>
 
 <script>
 import {mapGetters} from "vuex"
 import { isAuthenticated } from "../dataProviders/authentication.js"
+import RecipesCategory from './RecipeCategories.vue'
 export default {
   name: 'RecipesList',
   props: {
@@ -40,15 +50,28 @@ export default {
     ...mapGetters(["getAllRecipes", "getListFavoriteIds"])     
   },
   components: {
+    RecipesCategory,
   },
   data() {
     return {
         showDetailsIDs: [],
+        category: ''
       }
     },
     async created(){  
     },
-    methods: {       
+    methods: { 
+      categorySelected(selected) {
+        this.category = selected
+      } ,  
+      filterList(items, category){
+        if(this.category === "") {
+          return items;
+        } else {
+          const filteredItems = items.filter(item => { return item.category === category});
+          return filteredItems
+        }
+      },   
       async showHideDetails(recipe) {
         const formData = new FormData();
         if (this.showDetailsIDs.includes(recipe.id)){
@@ -102,13 +125,17 @@ export default {
   align-items: flex-start;
 }
 
+.recipes-main-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
 
 .recepies-wrapper {
   margin-top: 50px;
   margin-left: 50px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+
 }
 
 
@@ -118,7 +145,8 @@ article {
 }
 .recipe-title {
   text-align: center;
-  margin: 40px;
+  margin: 20px;
+  display: block;
   font-family: "Kalam", sans-serif;
   font-size: large;
 }
@@ -132,21 +160,36 @@ img {
   height: 100%;
 }
 .btn-wrapper {
-  margin-top: 10px;
   margin-bottom: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   text-align: left;
 }
+.thimb-heart-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+}
+.viewed-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
 .thumbs-icon {
   margin: 10px;
+  color: green;
 }
-.eye-icon {
+.viewed {
   margin: 10px;
+  font-size: 0.8rem;
+  color:darkgray;
+
 }
 .heart-icon {
   margin: 10px;
+  color:darkred;
 }
 
 ul {

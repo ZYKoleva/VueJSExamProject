@@ -1,6 +1,9 @@
 <template>
-    <div class="recepies-wrapper">
-    <article class="recepies-wrapper" v-for="(recipe, index) in getMyFavoriteRecipes" v-bind:key="index">
+<div>
+      <RecipesCategory
+    @categorySelected="categorySelected"/>
+    <div class="recipes-main-wrapper">
+    <article class="recepies-wrapper" v-for="(recipe, index) in filterList(getMyFavoriteRecipes, category)" v-bind:key="index">
       <div class="img-wrapper">
         <img
           class="cookable"
@@ -9,9 +12,13 @@
         />
       </div>
       <div class="btn-wrapper">
-        <div class="thumbs-icon"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</div>
-        <div class="eye-icon"><i class="fa fa-eye fa-sm"></i>{{recipe.viewed}}</div>
         <a class="xmark-icon" @click="removeFromFavourite(recipe)">❌</a>
+      <div class="viewed-liked">
+        <div class="thumbs-icon"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</div>
+        <div class="viewed">Viewed: {{recipe.viewed}}</div>
+      </div>
+
+
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
         {{ recipe.name }} {{recipe.id}}        
@@ -25,17 +32,21 @@
       </div>
     </article> 
   </div> 
+</div>
 </template>
 
 <script>
 import {mapGetters} from "vuex"
+import RecipesCategory from './RecipeCategories.vue'
 export default {
   name: 'MyFavoriteRecipesList',
   components: {
+     RecipesCategory,
   },
   data() {
     return {
         showDetailsIDs: [],
+        category: ''
       }
     },
     async created(){
@@ -43,21 +54,32 @@ export default {
      computed: {
     ...mapGetters(["getMyFavoriteRecipes"])     
     },
-    methods: {       
-    async showHideDetails(recipe) {
-      if (this.showDetailsIDs.includes(recipe.id)){
-        this.showDetailsIDs = []
-      } else {
-        this.showDetailsIDs = []
-        this.showDetailsIDs.push(recipe.id)
-      }
-    },     
-    async removeFromFavourite(recipe){
-      if(confirm(`Are you sure you want to remove the recipe ${recipe.name} from your favorites?`)){
-        const recipe_id = recipe.id
-        await this.$store.dispatch('removeFavorite', recipe_id);        
-      }
-    },    
+    methods: {  
+      categorySelected(selected) {
+        this.category = selected
+      } ,  
+      filterList(items, category){
+        if(this.category === "") {
+          return items;
+        } else {
+          const filteredItems = items.filter(item => { return item.category === category});
+          return filteredItems
+        }
+      },             
+      async showHideDetails(recipe) {
+        if (this.showDetailsIDs.includes(recipe.id)){
+          this.showDetailsIDs = []
+        } else {
+          this.showDetailsIDs = []
+          this.showDetailsIDs.push(recipe.id)
+        }
+      },     
+      async removeFromFavourite(recipe){
+        if(confirm(`Are you sure you want to remove the recipe ${recipe.name} from your favorites?`)){
+          const recipe_id = recipe.id
+          await this.$store.dispatch('removeFavorite', recipe_id);        
+        }
+      },    
   },
 }
 </script>
@@ -72,14 +94,18 @@ export default {
   flex-wrap: wrap;
   align-items: flex-start;
 }
+.recipes-main-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
 
 
 .recepies-wrapper {
   margin-top: 50px;
   margin-left: 50px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+
 }
 
 
@@ -103,24 +129,34 @@ img {
   height: 100%;
 }
 .btn-wrapper {
-  margin-top: 10px;
   margin-bottom: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   text-align: left;
 }
+.viewed-liked {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
 .thumbs-icon {
   margin: 10px;
-  color: grey;
+  color: green;
+}
+.viewed {
+  margin: 10px;
+  font-size: 0.8rem;
+  color:darkgray;
 
 }
 .eye-icon {
   margin: 10px;
   color: grey;
 }
+
 .xmark-icon {
-    margin-left: 50px;
+  margin: 10px;
 
 }
 
