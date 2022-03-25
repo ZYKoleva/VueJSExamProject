@@ -21,13 +21,15 @@
 
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
-        {{ recipe.name }} {{recipe.id}}        
+        {{recipe.id}}. {{ recipe.name }}        
       </div>
            
       <div>
         <div v-if="showDetailsIDs.includes(recipe.id)" class="description-wrapper">
-          <h5>Preparation</h5>
+          <h5>Method</h5>
           <p class="recipe-description">{{ recipe.description }}</p>
+          <h5>Ingredients</h5>
+          <p class="recipe-description">{{ recipe.ingredients }}</p>
         </div>
       </div>
     </article> 
@@ -119,6 +121,9 @@ article {
   font-family: "Kalam", sans-serif;
   font-size: large;
 }
+.recipe-title:hover {
+  cursor: pointer;
+}
 
 .img-wrapper {
   width: 300px;
@@ -142,8 +147,12 @@ img {
 }
 .thumbs-icon {
   margin: 10px;
-  color: green;
+  color: darkgray;
 }
+.thumbs-icon:hover {
+  cursor: not-allowed;
+}
+
 .viewed {
   margin: 10px;
   font-size: 0.8rem;
