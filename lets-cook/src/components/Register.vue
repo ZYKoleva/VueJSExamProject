@@ -1,5 +1,6 @@
 <template>
     <form class="login-form-wrapper" action="" method="post" @submit.prevent="registerBtnClicked">
+       <p class="error" v-if="err">{{err}}</p>
   <div class="form-group">
     <label for="username">Username</label>
     <input v-model.lazy.trim="$v.registerData.username.$model" type="username" class="form-control" id="username" aria-describedby="usernameHelp" placeholder="Enter Username">
@@ -31,7 +32,7 @@
 
 <script>
 import { required, minLength, email, sameAs} from 'vuelidate/lib/validators'
-import { register } from '../dataProviders/authentication'
+import { register, getAllUsernames } from '../dataProviders/authentication'
 export default {
   name: "Register",
   props: {
@@ -40,7 +41,6 @@ export default {
   },
   data () {
     return {
-        username: '',
         registerData: {
             username: '',
             email: '',
@@ -48,6 +48,7 @@ export default {
         },
         password2: '',
         error: '',
+        err: ''
     }
   },
     validations: {
@@ -64,19 +65,32 @@ export default {
         }
     },
   methods: {
-    async registerBtnClicked(){
-      this.$store.commit('clearCurrentUserData');
-      this.$store.commit('clearStoreData');
-      const registerData = this.registerData;
-      await register(registerData);
-      this.$store.commit('currentUserData', {username: `${registerData['username']}`, isAuth: true});
-      this.$store.dispatch("loadAllRecipes");
-      this.$store.dispatch("loadFavoriteRecipes");
-      this.$store.dispatch("loadMyRecipes");
-      this.$store.dispatch('loadFavoriteIds');
-      this.$router.push({name: "allRecipes"});
+
+      async registerBtnClicked(){
+        try {
+        this.$store.commit('clearCurrentUserData');
+        this.$store.commit('clearStoreData');
+        const registerData = this.registerData;
+        const check_username_exists = await getAllUsernames()
+        if(check_username_exists.includes(registerData['username'])) {
+          this.err = "Username already exists. Please select a different username"
+          return [];
+        }
+        const response = await register(registerData);
+        console.log("this is the response: ", response.status)
+        this.$store.commit('currentUserData', {username: `${registerData['username']}`, isAuth: true});
+        this.$store.dispatch("loadAllRecipes");
+        this.$store.dispatch("loadFavoriteRecipes");
+        this.$store.dispatch("loadMyRecipes");
+        this.$store.dispatch('loadFavoriteIds');
+        this.$router.push({name: "allRecipes"});
+        }
+        catch (err) {
+          
+          this.er = "Error occured during registration. "
+        }
       },
-    },
+  }
 };
 </script>
 <style>
