@@ -14,6 +14,7 @@ class Recipe(models.Model):
     ]
     name = models.CharField(max_length=100, default="Name")
     image = models.ImageField(upload_to='images')
+    ingredients = models.TextField(max_length=1000, blank=True)
     description = models.TextField(max_length=1000, blank=True)
     viewed = models.IntegerField(default=0)
     liked = models.IntegerField(default=0)

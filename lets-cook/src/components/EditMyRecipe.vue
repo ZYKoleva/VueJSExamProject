@@ -16,12 +16,22 @@
      
           </div>
           <div class="form-group">
-            <label for="description">Description</label>
+            <label for="description">Method</label>
             <textarea rows="8" cols="50"
               type="text"
               id="description"
               class="form-control recipe-description"
               v-model.lazy="selected_recipe.description"
+            />
+         
+          </div>
+           <div class="form-group">
+            <label for="description">Ingredients</label>
+            <textarea rows="8" cols="50"
+              type="text"
+              id="description"
+              class="form-control recipe-description"
+              v-model.lazy="selected_recipe.ingredients"
             />
          
           </div>
@@ -85,6 +95,7 @@ export default {
           formData.append('category', this.category_changed);
         }        
         formData.append('description', this.selected_recipe.description);
+        formData.append('ingredients', this.selected_recipe.ingredients);
         formData.append('name', this.selected_recipe.name);
         await updateRecipe(this.selected_recipe.id, formData)
         await this.$store.dispatch("loadAllRecipes")

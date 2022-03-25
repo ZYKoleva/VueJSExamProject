@@ -19,20 +19,22 @@
           <a href='' @click="deleteMyRecipe(recipe)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
         </div>
         <div class="viewed-seen-wrapper">
-          <a class="thumbs-icon" @click="liked(recipe)"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
+          <a class="thumbs-icon"><i class="fa fa-thumbs-up fa-sm" aria-hidden="true"></i>{{recipe.liked}}</a>
          
             <div><span class="viewed">Viewed: {{recipe.viewed}}</span></div>  
         </div>    
        
       </div> 
       <div class="recipe-title" @click="showHideDetails(recipe)">
-        {{ recipe.name }} {{recipe.id}}        
+        {{recipe.id}}. {{ recipe.name }}         
       </div>
            
       <div>
         <div v-if="showDetailsIDs.includes(recipe.id)" class="description-wrapper">
-          <h5>Preparation</h5>
+          <h5>Method</h5>
           <p class="recipe-description">{{ recipe.description }}</p>
+          <h5>Ingredients</h5>
+          <p class="recipe-description">{{ recipe.ingredients }}</p>
         </div>
       </div>
     </article> 
@@ -130,6 +132,9 @@ article {
   font-family: "Kalam", sans-serif;
   font-size: large;
 }
+.recipe-title:hover {
+  cursor: pointer;
+}
 
 .img-wrapper {
   width: 300px;
@@ -167,7 +172,10 @@ img {
 .thumbs-icon {
   margin: 10px;
   color: grey;
+}
 
+.thumbs-icon:hover {
+  cursor: not-allowed;
 }
 .eye-icon {
   margin: 10px;

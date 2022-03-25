@@ -25,6 +25,16 @@
             />
          
           </div>
+           <div class="form-group">
+            <label for="description">Ingredients</label>
+            <textarea rows="8" cols="50"
+              type="text"
+              id="description"
+              class="form-control recipe-description"
+              v-model.lazy="recipeForm.ingredients"
+            />
+         
+          </div>
           <div class="form-group">
             <label for="image">
               <span class="span-picture">Picture</span>
@@ -67,6 +77,7 @@ export default {
         name: "",
         image: "",        
         description: "",
+        ingredients: "",
         category: "",
       },
     };
@@ -82,6 +93,7 @@ export default {
         const formData = new FormData();
         formData.append('image', this.recipeForm.image);
         formData.append('description', this.recipeForm.description);
+        formData.append('ingredients', this.recipeForm.ingredients);
         formData.append('name', this.recipeForm.name);
         formData.append('category', this.recipeForm.category);
         await addRecipe(formData)
