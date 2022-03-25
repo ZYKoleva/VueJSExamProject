@@ -68,7 +68,7 @@ Solution consists of Vue app as front-end and Django app back-end.
 
 git clone https://github.com/ZYKoleva/VueJSExamProject.git
 
-Backend (backend_django dir):    
+Back-end (backend_django dir):    
 
 ```
 python -m venv .env
@@ -78,7 +78,7 @@ cd cookbook
 python manage.py runserver
 ```
 
-Fronend (lets-cook dir):
+Front-end (lets-cook dir):
 ```
 npm install
 npm run serve
